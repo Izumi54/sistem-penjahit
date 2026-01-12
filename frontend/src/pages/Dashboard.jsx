@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom'
 import useAuthStore from '../stores/authStore'
 import './Dashboard.css'
 
@@ -41,7 +42,15 @@ function Dashboard() {
                     </div>
 
                     <div className="alert alert-info mt-lg">
-                        <strong>🚧 Coming Soon:</strong> Dashboard analytics, kelola pelanggan, input pesanan, dan fitur lainnya akan segera hadir!
+                        <strong>🚀 Quick Links:</strong>
+                        <div style={{ marginTop: '0.75rem', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                            <Link to="/pelanggan" className="btn btn-sm btn-primary">
+                                👥 Kelola Pelanggan
+                            </Link>
+                            <button className="btn btn-sm btn-secondary" disabled>
+                                📦 Input Pesanan (Coming Soon)
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>

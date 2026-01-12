@@ -4,6 +4,7 @@ import useAuthStore from './stores/authStore'
 import ProtectedRoute from './components/common/ProtectedRoute'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
+import Pelanggan from './pages/Pelanggan'
 import './App.css'
 
 function App() {
@@ -31,6 +32,14 @@ function App() {
                     element={
                         <ProtectedRoute>
                             <Dashboard />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/pelanggan"
+                    element={
+                        <ProtectedRoute>
+                            <Pelanggan />
                         </ProtectedRoute>
                     }
                 />

@@ -1,0 +1,102 @@
+/* Pelanggan Page Styles */
+
+.pelanggan-page {
+    min-height: 100vh;
+    background: var(--color-gray-50);
+}
+
+.page-header {
+    background: white;
+    border-bottom: 1px solid var(--color-gray-200);
+    padding: 1.5rem 0;
+    margin-bottom: 2rem;
+}
+
+.page-title {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: var(--color-gray-900);
+    margin: 0;
+}
+
+.page-subtitle {
+    color: var(--color-gray-600);
+    font-size: 0.875rem;
+    margin: 0.25rem 0 0 0;
+}
+
+.page-content {
+    padding: 0 1.5rem 2rem 1.5rem;
+}
+
+/* Search & Filter */
+.search-filter-bar {
+    display: flex;
+    gap: 1rem;
+}
+
+.search-input {
+    flex: 1;
+}
+
+/* Table */
+.table-responsive {
+    overflow-x: auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th {
+    background: var(--color-gray-50);
+    padding: 0.75rem 1rem;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--color-gray-700);
+    border-bottom: 2px solid var(--color-gray-200);
+    white-space: nowrap;
+}
+
+.table td {
+    padding: 0.875rem 1rem;
+    border-bottom: 1px solid var(--color-gray-200);
+    font-size: 0.875rem;
+}
+
+.table tr:hover {
+    background: var(--color-gray-50);
+}
+
+/* Pagination */
+.pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 1.5rem;
+    border-top: 1px solid var(--color-gray-200);
+}
+
+.pagination-info {
+    font-size: 0.875rem;
+    color: var(--color-gray-600);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .search-filter-bar {
+        flex-direction: column;
+    }
+
+    .table {
+        font-size: 0.75rem;
+    }
+
+    .table th,
+    .table td {
+        padding: 0.5rem;
+    }
+}
