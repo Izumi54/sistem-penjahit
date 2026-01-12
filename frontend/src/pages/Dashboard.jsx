@@ -47,6 +47,9 @@ function Dashboard() {
                             <Link to="/pelanggan" className="btn btn-sm btn-primary">
                                 👥 Kelola Pelanggan
                             </Link>
+                            <Link to="/jenis-pakaian" className="btn btn-sm btn-primary">
+                                👔 Jenis Pakaian
+                            </Link>
                             <button className="btn btn-sm btn-secondary" disabled>
                                 📦 Input Pesanan (Coming Soon)
                             </button>

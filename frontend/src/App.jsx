@@ -5,6 +5,7 @@ import ProtectedRoute from './components/common/ProtectedRoute'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import Pelanggan from './pages/Pelanggan'
+import JenisPakaian from './pages/JenisPakaian'
 import './App.css'
 
 function App() {
@@ -40,6 +41,14 @@ function App() {
                     element={
                         <ProtectedRoute>
                             <Pelanggan />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/jenis-pakaian"
+                    element={
+                        <ProtectedRoute>
+                            <JenisPakaian />
                         </ProtectedRoute>
                     }
                 />

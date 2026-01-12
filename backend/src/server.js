@@ -3,6 +3,7 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import authRoutes from './routes/authRoutes.js'
 import pelangganRoutes from './routes/pelangganRoutes.js'
+import jenisPakaianRoutes from './routes/jenisPakaianRoutes.js'
 
 // Load environment variables
 dotenv.config()
@@ -31,6 +32,7 @@ app.get('/', (req, res) => {
 // Mount API routes
 app.use('/api/auth', authRoutes)
 app.use('/api/pelanggan', pelangganRoutes)
+app.use('/api/jenis-pakaian', jenisPakaianRoutes)
 
 // API routes will be mounted here
 app.get('/api', (req, res) => {

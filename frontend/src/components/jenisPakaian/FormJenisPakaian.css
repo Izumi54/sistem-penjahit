@@ -1,0 +1,52 @@
+/* FormJenisPakaian - extends FormPelanggan styles */
+@import '../pelanggan/FormPelanggan.css';
+
+.modal-large {
+    max-width: 800px;
+}
+
+.divider {
+    margin: 2rem 0;
+    border: none;
+    border-top: 1px solid var(--color-gray-200);
+}
+
+.template-section h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--color-gray-900);
+    margin: 0;
+}
+
+.template-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.template-item {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.input-sm {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .modal-large {
+        max-width: 100%;
+        margin: 1rem;
+    }
+
+    .template-item {
+        flex-wrap: wrap;
+    }
+
+    .template-item input {
+        flex: 1 1 100%;
+    }
+}

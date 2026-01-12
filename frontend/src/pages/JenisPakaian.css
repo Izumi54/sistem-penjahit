@@ -1,0 +1,7 @@
+/* JenisPakaian Page - uses same styles as Pelanggan */
+@import './Pelanggan.css';
+
+.jenis-pakaian-page {
+    min-height: 100vh;
+    background: var(--color-gray-50);
+}
