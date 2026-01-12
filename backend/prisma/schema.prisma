@@ -1,0 +1,252 @@
+// Prisma Schema untuk Sistem Jasa Penjahit
+// Database: PostgreSQL 16
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ===================================
+// 1. USERS (Admin)
+// ===================================
+model User {
+  idUser      Int      @id @default(autoincrement()) @map("id_user")
+  username    String   @unique @db.VarChar(50)
+  password    String   @db.VarChar(255)
+  namaLengkap String   @map("nama_lengkap") @db.VarChar(100)
+  fotoProfil  String?  @map("foto_profil") @db.Text
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  pesanan         Pesanan[]
+  historyStatus   HistoryStatusPesanan[]
+
+  @@map("users")
+}
+
+// ===================================
+// 2. PELANGGAN
+// ===================================
+model Pelanggan {
+  idPelanggan  String   @id @map("id_pelanggan") @db.VarChar(10)
+  namaLengkap  String   @map("nama_lengkap") @db.VarChar(100)
+  jenisKelamin String   @map("jenis_kelamin") @db.VarChar(1) // 'L' atau 'P'
+  noWa         String   @map("no_wa") @db.VarChar(15)
+  email        String?  @db.VarChar(100)
+  alamat       String?  @db.Text
+  catatan      String?  @db.Text
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  ukuran        UkuranPelanggan[]
+  pesanan       Pesanan[]
+  historyUkuran HistoryUkuran[]
+
+  @@map("pelanggan")
+}
+
+// ===================================
+// 3. JENIS PAKAIAN (Master Data)
+// ===================================
+model JenisPakaian {
+  idJenis         String   @id @map("id_jenis") @db.VarChar(10)
+  namaJenis       String   @map("nama_jenis") @db.VarChar(50)
+  kategori        String   @db.VarChar(20) // 'ATASAN', 'BAWAHAN', 'DRESS', 'FORMAL'
+  untukGender     String   @map("untuk_gender") @db.VarChar(10) // 'L', 'P', 'UNISEX'
+  hargaMulaiDari  Int?     @map("harga_mulai_dari")
+  deskripsi       String?  @db.Text
+  isActive        Boolean  @default(true) @map("is_active")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  // Relations
+  templateUkuran  TemplateUkuran[]
+  ukuranPelanggan UkuranPelanggan[]
+  detailPesanan   DetailPesanan[]
+  historyUkuran   HistoryUkuran[]
+
+  @@map("jenis_pakaian")
+}
+
+// ===================================
+// 4. TEMPLATE UKURAN
+// ===================================
+model TemplateUkuran {
+  idTemplate  Int     @id @default(autoincrement()) @map("id_template")
+  idJenis     String  @map("id_jenis") @db.VarChar(10)
+  namaUkuran  String  @map("nama_ukuran") @db.VarChar(50)
+  kodeUkuran  String  @map("kode_ukuran") @db.VarChar(10)
+  satuan      String  @default("cm") @db.VarChar(10)
+  isRequired  Boolean @default(true) @map("is_required")
+  urutan      Int
+
+  // Relations
+  jenisPakaian JenisPakaian @relation(fields: [idJenis], references: [idJenis], onDelete: Cascade)
+
+  @@map("template_ukuran")
+  @@index([idJenis])
+}
+
+// ===================================
+// 5. UKURAN PELANGGAN (Flexible Schema - EAV Pattern)
+// ===================================
+model UkuranPelanggan {
+  idUkuran     Int      @id @default(autoincrement()) @map("id_ukuran")
+  idPelanggan  String   @map("id_pelanggan") @db.VarChar(10)
+  idJenis      String   @map("id_jenis") @db.VarChar(10)
+  kodeUkuran   String   @map("kode_ukuran") @db.VarChar(10)
+  nilai        Decimal  @db.Decimal(5, 2)
+  catatan      String?  @db.Text
+  tanggalUkur  DateTime @default(now()) @map("tanggal_ukur") @db.Date
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  // Relations
+  pelanggan    Pelanggan    @relation(fields: [idPelanggan], references: [idPelanggan], onDelete: Cascade)
+  jenisPakaian JenisPakaian @relation(fields: [idJenis], references: [idJenis])
+
+  @@map("ukuran_pelanggan")
+  @@index([idPelanggan, idJenis])
+  @@unique([idPelanggan, idJenis, kodeUkuran])
+}
+
+// ===================================
+// 6. HISTORY UKURAN (Tracking Perubahan)
+// ===================================
+model HistoryUkuran {
+  idHistory    Int      @id @default(autoincrement()) @map("id_history")
+  idPelanggan  String   @map("id_pelanggan") @db.VarChar(10)
+  idJenis      String   @map("id_jenis") @db.VarChar(10)
+  kodeUkuran   String   @map("kode_ukuran") @db.VarChar(10)
+  nilaiLama    Decimal? @map("nilai_lama") @db.Decimal(5, 2)
+  nilaiBaru    Decimal  @map("nilai_baru") @db.Decimal(5, 2)
+  tanggalUbah  DateTime @default(now()) @map("tanggal_ubah")
+  keterangan   String?  @db.Text
+
+  // Relations
+  pelanggan    Pelanggan    @relation(fields: [idPelanggan], references: [idPelanggan], onDelete: Cascade)
+  jenisPakaian JenisPakaian @relation(fields: [idJenis], references: [idJenis])
+
+  @@map("history_ukuran")
+  @@index([idPelanggan, idJenis])
+}
+
+// ===================================
+// 7. PESANAN (Header Transaksi)
+// ===================================
+model Pesanan {
+  noNota            String    @id @map("no_nota") @db.VarChar(20)
+  idPelanggan       String    @map("id_pelanggan") @db.VarChar(10)
+  idUser            Int       @map("id_user")
+  tglMasuk          DateTime  @map("tgl_masuk") @db.Date
+  tglJanjiSelesai   DateTime  @map("tgl_janji_selesai") @db.Date
+  tglSelesaiAktual  DateTime? @map("tgl_selesai_aktual") @db.Date
+  totalBiaya        Int       @default(0) @map("total_biaya")
+  totalDp           Int       @default(0) @map("total_dp")
+  sisaBayar         Int       @default(0) @map("sisa_bayar")
+  statusPesanan     String    @map("status_pesanan") @db.VarChar(20) // ANTRI, POTONG, JAHIT, SELESAI, DIAMBIL, BATAL
+  catatanPesanan    String?   @map("catatan_pesanan") @db.Text
+  notifWaSent       Boolean   @default(false) @map("notif_wa_sent")
+  notifWaDate       DateTime? @map("notif_wa_date")
+  lastReminderAt    DateTime? @map("last_reminder_at")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  pelanggan       Pelanggan              @relation(fields: [idPelanggan], references: [idPelanggan])
+  user            User                   @relation(fields: [idUser], references: [idUser])
+  detailPesanan   DetailPesanan[]
+  pembayaran      Pembayaran[]
+  historyStatus   HistoryStatusPesanan[]
+
+  @@map("pesanan")
+  @@index([idPelanggan])
+  @@index([statusPesanan])
+  @@index([tglJanjiSelesai])
+}
+
+// ===================================
+// 8. DETAIL PESANAN (Item dalam Nota)
+// ===================================
+model DetailPesanan {
+  idDetail        Int      @id @default(autoincrement()) @map("id_detail")
+  noNota          String   @map("no_nota") @db.VarChar(20)
+  idJenis         String   @map("id_jenis") @db.VarChar(10)
+  namaItem        String   @map("nama_item") @db.VarChar(100)
+  modelSpesifik   String?  @map("model_spesifik") @db.Text
+  jumlahPcs       Int      @default(1) @map("jumlah_pcs")
+  hargaSatuan     Int      @map("harga_satuan")
+  subtotal        Int
+  catatanPenjahit String?  @map("catatan_penjahit") @db.Text
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  // Relations
+  pesanan       Pesanan         @relation(fields: [noNota], references: [noNota], onDelete: Cascade)
+  jenisPakaian  JenisPakaian    @relation(fields: [idJenis], references: [idJenis])
+  fotoReferensi FotoReferensi[]
+
+  @@map("detail_pesanan")
+  @@index([noNota])
+}
+
+// ===================================
+// 9. FOTO REFERENSI (Google Drive)
+// ===================================
+model FotoReferensi {
+  idFoto     Int      @id @default(autoincrement()) @map("id_foto")
+  idDetail   Int      @map("id_detail")
+  pathFoto   String   @map("path_foto") @db.Text // Google Drive File ID atau URL
+  keterangan String?  @db.Text
+  uploadedAt DateTime @default(now()) @map("uploaded_at")
+
+  // Relations
+  detailPesanan DetailPesanan @relation(fields: [idDetail], references: [idDetail], onDelete: Cascade)
+
+  @@map("foto_referensi")
+  @@index([idDetail])
+}
+
+// ===================================
+// 10. PEMBAYARAN
+// ===================================
+model Pembayaran {
+  idBayar       Int      @id @default(autoincrement()) @map("id_bayar")
+  noNota        String   @map("no_nota") @db.VarChar(20)
+  tglBayar      DateTime @map("tgl_bayar") @db.Date
+  nominal       Int
+  jenisBayar    String   @map("jenis_bayar") @db.VarChar(10) // DP, CICILAN, LUNAS
+  metodeBayar   String   @map("metode_bayar") @db.VarChar(20) // CASH, TRANSFER, QRIS, LAINNYA
+  buktiTransfer String?  @map("bukti_transfer") @db.Text
+  catatan       String?  @db.Text
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  // Relations
+  pesanan Pesanan @relation(fields: [noNota], references: [noNota], onDelete: Cascade)
+
+  @@map("pembayaran")
+  @@index([noNota])
+}
+
+// ===================================
+// 11. HISTORY STATUS PESANAN (Tracking Log)
+// ===================================
+model HistoryStatusPesanan {
+  idHistory         Int      @id @default(autoincrement()) @map("id_history")
+  noNota            String   @map("no_nota") @db.VarChar(20)
+  statusLama        String?  @map("status_lama") @db.VarChar(20)
+  statusBaru        String   @map("status_baru") @db.VarChar(20)
+  idUser            Int      @map("id_user")
+  catatanPerubahan  String?  @map("catatan_perubahan") @db.Text
+  createdAt         DateTime @default(now()) @map("created_at")
+
+  // Relations
+  pesanan Pesanan @relation(fields: [noNota], references: [noNota], onDelete: Cascade)
+  user    User    @relation(fields: [idUser], references: [idUser])
+
+  @@map("history_status_pesanan")
+  @@index([noNota])
+}
