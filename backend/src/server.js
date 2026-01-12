@@ -1,6 +1,7 @@
 import express from 'express'
 import cors from 'cors'
 import dotenv from 'dotenv'
+import authRoutes from './routes/authRoutes.js'
 
 // Load environment variables
 dotenv.config()
@@ -25,6 +26,9 @@ app.get('/', (req, res) => {
         timestamp: new Date().toISOString(),
     })
 })
+
+// Mount API routes
+app.use('/api/auth', authRoutes)
 
 // API routes will be mounted here
 app.get('/api', (req, res) => {

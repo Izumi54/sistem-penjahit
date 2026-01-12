@@ -1,39 +1,52 @@
-import { useState } from 'react'
+import { useEffect } from 'react'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import useAuthStore from './stores/authStore'
+import ProtectedRoute from './components/common/ProtectedRoute'
+import Login from './pages/Login'
+import Dashboard from './pages/Dashboard'
 import './App.css'
 
 function App() {
+    const { isAuthenticated, initAuth } = useAuthStore()
+
+    // Initialize auth from localStorage on app load
+    useEffect(() => {
+        initAuth()
+    }, [initAuth])
+
     return (
-        <div className="app">
-            <div className="container">
-                <div className="card card-center">
-                    <h1 className="text-gradient">Sistem Jasa Penjahit</h1>
-                    <p className="text-muted">Setup berhasil! Frontend siap dikembangkan 🚀</p>
+        <BrowserRouter>
+            <Routes>
+                {/* Public routes */}
+                <Route
+                    path="/login"
+                    element={
+                        isAuthenticated ? <Navigate to="/dashboard" replace /> : <Login />
+                    }
+                />
 
-                    <div className="feature-list">
-                        <div className="feature-item">
-                            <span className="icon">✅</span>
-                            <span>React 18 + Vite</span>
-                        </div>
-                        <div className="feature-item">
-                            <span className="icon">✅</span>
-                            <span>Zustand State Management</span>
-                        </div>
-                        <div className="feature-item">
-                            <span className="icon">✅</span>
-                            <span>Axios HTTP Client</span>
-                        </div>
-                        <div className="feature-item">
-                            <span className="icon">✅</span>
-                            <span>Chart.js Analytics</span>
-                        </div>
-                    </div>
+                {/* Protected routes */}
+                <Route
+                    path="/dashboard"
+                    element={
+                        <ProtectedRoute>
+                            <Dashboard />
+                        </ProtectedRoute>
+                    }
+                />
 
-                    <div className="alert alert-info">
-                        <strong>Next Step:</strong> Setup backend (Express + PostgreSQL)
-                    </div>
-                </div>
-            </div>
-        </div>
+                {/* Default redirect */}
+                <Route
+                    path="/"
+                    element={
+                        <Navigate to={isAuthenticated ? '/dashboard' : '/login'} replace />
+                    }
+                />
+
+                {/* 404 - redirect to home */}
+                <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+        </BrowserRouter>
     )
 }
 
