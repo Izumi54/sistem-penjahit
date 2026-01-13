@@ -4,6 +4,7 @@ import dotenv from 'dotenv'
 import authRoutes from './routes/authRoutes.js'
 import pelangganRoutes from './routes/pelangganRoutes.js'
 import jenisPakaianRoutes from './routes/jenisPakaianRoutes.js'
+import pesananRoutes from './routes/pesananRoutes.js'
 
 // Load environment variables
 dotenv.config()
@@ -33,6 +34,7 @@ app.get('/', (req, res) => {
 app.use('/api/auth', authRoutes)
 app.use('/api/pelanggan', pelangganRoutes)
 app.use('/api/jenis-pakaian', jenisPakaianRoutes)
+app.use('/api/pesanan', pesananRoutes)
 
 // API routes will be mounted here
 app.get('/api', (req, res) => {

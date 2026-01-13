@@ -50,8 +50,11 @@ function Dashboard() {
                             <Link to="/jenis-pakaian" className="btn btn-sm btn-primary">
                                 👔 Jenis Pakaian
                             </Link>
+                            <Link to="/pesanan/baru" className="btn btn-sm btn-success">
+                                ➕ Input Pesanan Baru
+                            </Link>
                             <button className="btn btn-sm btn-secondary" disabled>
-                                📦 Input Pesanan (Coming Soon)
+                                📦 List Pesanan (Coming Soon)
                             </button>
                         </div>
                     </div>

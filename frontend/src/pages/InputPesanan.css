@@ -1,0 +1,245 @@
+/* InputPesanan & Wizard Styles */
+
+.input-pesanan-page {
+    min-height: 100vh;
+    background: var(--color-gray-50);
+}
+
+/* Wizard Header */
+.wizard-header {
+    background: white;
+    border-bottom: 1px solid var(--color-gray-200);
+    padding: 1.5rem 0;
+    margin-bottom: 2rem;
+}
+
+.wizard-progress {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 1.5rem;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.step-number {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-gray-200);
+    color: var(--color-gray-600);
+    font-weight: 600;
+    transition: all var(--transition-normal);
+}
+
+.step.active .step-number {
+    background: var(--color-primary);
+    color: white;
+}
+
+.step-label {
+    font-size: 0.75rem;
+    color: var(--color-gray-600);
+    font-weight: 500;
+}
+
+.step.active .step-label {
+    color: var(--color-primary);
+}
+
+.step-line {
+    flex: 1;
+    height: 2px;
+    background: var(--color-gray-200);
+    margin: 0 1rem;
+    min-width: 40px;
+}
+
+/* Wizard Content */
+.wizard-content {
+    padding: 0 1.5rem 2rem 1.5rem;
+}
+
+.step-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--color-gray-900);
+    margin-bottom: 1.5rem;
+}
+
+/* Wizard Navigation */
+.wizard-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--color-gray-200);
+}
+
+/* Mode Toggle */
+.mode-toggle {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.radio-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.radio-label input[type="radio"] {
+    cursor: pointer;
+}
+
+/* Add Item Section */
+.add-item-section {
+    padding: 1rem;
+    background: var(--color-gray-50);
+    border-radius: 8px;
+    margin-bottom: 1rem;
+}
+
+/* Items List */
+.items-list {
+    margin-top: 1.5rem;
+}
+
+.items-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.item-card {
+    padding: 1rem;
+    background: white;
+    border: 1px solid var(--color-gray-200);
+    border-radius: 8px;
+    margin-bottom: 0.75rem;
+}
+
+/* Item Detail Card */
+.item-detail-card {
+    padding: 1.5rem;
+    background: var(--color-gray-50);
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+}
+
+.item-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--color-primary);
+}
+
+.subtotal-display {
+    margin-top: 1rem;
+    padding: 0.75rem;
+    background: white;
+    border-radius: 6px;
+    text-align: right;
+    font-size: 1.125rem;
+}
+
+/* Summary Sections */
+.summary-section {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: var(--color-gray-50);
+    border-radius: 8px;
+}
+
+.summary-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+}
+
+.summary-content p {
+    margin: 0.5rem 0;
+}
+
+.summary-table {
+    width: 100%;
+    margin-top: 0.75rem;
+}
+
+.summary-table th,
+.summary-table td {
+    padding: 0.5rem;
+    text-align: left;
+}
+
+.summary-table tfoot th {
+    font-weight: 700;
+    background: var(--color-gray-100);
+}
+
+/* Payment Section */
+.payment-section {
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+    background: var(--color-gray-50);
+    border-radius: 8px;
+}
+
+.payment-summary {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: white;
+    border-radius: 6px;
+}
+
+.payment-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--color-gray-200);
+}
+
+.payment-row.total {
+    border-bottom: none;
+    padding-top: 1rem;
+    margin-top: 0.5rem;
+    border-top: 2px solid var(--color-gray-300);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .wizard-progress {
+        overflow-x: auto;
+        justify-content: flex-start;
+    }
+
+    .step-label {
+        display: none;
+    }
+
+    .step-line {
+        min-width: 20px;
+    }
+
+    .mode-toggle {
+        flex-direction: column;
+    }
+
+    .summary-table {
+        font-size: 0.875rem;
+    }
+}

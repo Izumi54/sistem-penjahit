@@ -19,6 +19,22 @@ export const generateKodePelanggan = (lastKode) => {
 }
 
 /**
+ * Generate nomor nota otomatis (NOTA001, NOTA002, ...)
+ */
+export const generateNoNota = (lastNoNota) => {
+    if (!lastNoNota) {
+        return 'NOTA001'
+    }
+
+    // Extract number from last nota (e.g., 'NOTA001' -> 1)
+    const lastNumber = parseInt(lastNoNota.substring(4))
+    const newNumber = lastNumber + 1
+
+    // Pad with zeros (e.g., 1 -> '001')
+    return 'NOTA' + newNumber.toString().padStart(3, '0')
+}
+
+/**
  * Format phone number (add +62 prefix if not exists)
  */
 export const formatPhoneNumber = (phone) => {

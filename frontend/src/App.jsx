@@ -6,6 +6,7 @@ import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import Pelanggan from './pages/Pelanggan'
 import JenisPakaian from './pages/JenisPakaian'
+import InputPesanan from './pages/InputPesanan'
 import './App.css'
 
 function App() {
@@ -49,6 +50,14 @@ function App() {
                     element={
                         <ProtectedRoute>
                             <JenisPakaian />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/pesanan/baru"
+                    element={
+                        <ProtectedRoute>
+                            <InputPesanan />
                         </ProtectedRoute>
                     }
                 />
