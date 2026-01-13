@@ -1,6 +1,6 @@
 import useWizardStore from '../../stores/wizardStore'
 
-function Step4Konfirmasi() {
+function Step5Konfirmasi() {
     const {
         pelanggan,
         isNewPelanggan,
@@ -21,7 +21,7 @@ function Step4Konfirmasi() {
 
     return (
         <div>
-            <h2 className="step-title">Step 4: Konfirmasi Pesanan</h2>
+            <h2 className="step-title">Step 5: Konfirmasi Pesanan</h2>
 
             {/* Ringkasan Pelanggan */}
             <div className="summary-section">
@@ -60,7 +60,7 @@ function Step4Konfirmasi() {
                                         <tr key={index}>
                                             <td>{item.namaItem}</td>
                                             <td>{item.jumlahPcs || 1}</td>
-                                            <td>Rp {(item.hargaSatuan || 0).toLocaleString('id-ID')}</td>
+                                            <td> Rp {(item.hargaSatuan || 0).toLocaleString('id-ID')}</td>
                                             <td>Rp {subtotal.toLocaleString('id-ID')}</td>
                                         </tr>
                                     )
@@ -149,4 +149,4 @@ function Step4Konfirmasi() {
     )
 }
 
-export default Step4Konfirmasi
+export default Step5Konfirmasi

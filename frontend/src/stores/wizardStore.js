@@ -1,10 +1,10 @@
 import { create } from 'zustand'
 
 /**
- * Zustand store for Pesanan Wizard
+ * Zustand store for Pesanan Wizard (5 steps)
  */
 const useWizardStore = create((set, get) => ({
-    // Current step (1-4)
+    // Current step (1-5)
     currentStep: 1,
 
     // Step 1: Pelanggan
@@ -14,7 +14,10 @@ const useWizardStore = create((set, get) => ({
     // Step 2: Items (array of detail pesanan)
     items: [],
 
-    // Step 3 & 4: Tanggal & Pembayaran
+    // Step 4: Ukuran Badan (object with idJenis as key)
+    ukuranData: {}, // { idJenis: { kodeUkuran: nilai, ... } }
+
+    // Step 5: Tanggal & Pembayaran
     tglMasuk: new Date().toISOString().split('T')[0],
     tglJanjiSelesai: '',
     totalDp: 0,
@@ -23,7 +26,7 @@ const useWizardStore = create((set, get) => ({
     // Actions
     setStep: (step) => set({ currentStep: step }),
 
-    nextStep: () => set((state) => ({ currentStep: Math.min(state.currentStep + 1, 4) })),
+    nextStep: () => set((state) => ({ currentStep: Math.min(state.currentStep + 1, 5) })),
 
     prevStep: () => set((state) => ({ currentStep: Math.max(state.currentStep - 1, 1) })),
 
@@ -45,6 +48,26 @@ const useWizardStore = create((set, get) => ({
     removeItem: (itemId) =>
         set((state) => ({
             items: state.items.filter((item) => item.id !== itemId),
+        })),
+
+    // Ukuran data actions
+    setUkuranData: (idJenis, ukuranObj) =>
+        set((state) => ({
+            ukuranData: {
+                ...state.ukuranData,
+                [idJenis]: ukuranObj,
+            },
+        })),
+
+    updateUkuran: (idJenis, kodeUkuran, nilai) =>
+        set((state) => ({
+            ukuranData: {
+                ...state.ukuranData,
+                [idJenis]: {
+                    ...(state.ukuranData[idJenis] || {}),
+                    [kodeUkuran]: nilai,
+                },
+            },
         })),
 
     setTanggal: (tglMasuk, tglJanjiSelesai) =>
@@ -76,6 +99,7 @@ const useWizardStore = create((set, get) => ({
             pelanggan,
             isNewPelanggan,
             items,
+            ukuranData,
             tglMasuk,
             tglJanjiSelesai,
             totalDp,
@@ -83,8 +107,16 @@ const useWizardStore = create((set, get) => ({
         } = get()
 
         return {
+            // If new customer, send customer data, else send existing ID
             idPelanggan: isNewPelanggan ? null : pelanggan?.idPelanggan,
-            pelangganBaru: isNewPelanggan ? pelanggan : null,
+            pelangganBaru: isNewPelanggan ? {
+                namaLengkap: pelanggan?.namaLengkap,
+                jenisKelamin: pelanggan?.jenisKelamin,
+                noWa: pelanggan?.noWa,
+                email: pelanggan?.email || null,
+                alamat: pelanggan?.alamat || null,
+            } : null,
+            ukuranData, // Include ukuran data for saving
             tglMasuk,
             tglJanjiSelesai,
             totalDp: parseInt(totalDp) || 0,
@@ -107,6 +139,7 @@ const useWizardStore = create((set, get) => ({
             pelanggan: null,
             isNewPelanggan: false,
             items: [],
+            ukuranData: {},
             tglMasuk: new Date().toISOString().split('T')[0],
             tglJanjiSelesai: '',
             totalDp: 0,

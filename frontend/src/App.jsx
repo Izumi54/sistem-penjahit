@@ -6,7 +6,9 @@ import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import Pelanggan from './pages/Pelanggan'
 import JenisPakaian from './pages/JenisPakaian'
+import Pesanan from './pages/Pesanan'
 import InputPesanan from './pages/InputPesanan'
+import DetailPesanan from './pages/DetailPesanan'
 import './App.css'
 
 function App() {
@@ -54,10 +56,26 @@ function App() {
                     }
                 />
                 <Route
+                    path="/pesanan"
+                    element={
+                        <ProtectedRoute>
+                            <Pesanan />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
                     path="/pesanan/baru"
                     element={
                         <ProtectedRoute>
                             <InputPesanan />
+                        </ProtectedRoute>
+                    }
+                />
+                <Route
+                    path="/pesanan/:noNota"
+                    element={
+                        <ProtectedRoute>
+                            <DetailPesanan />
                         </ProtectedRoute>
                     }
                 />

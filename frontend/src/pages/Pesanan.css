@@ -1,0 +1,57 @@
+/* Pesanan Page - reuse Pelanggan styles */
+@import './Pelanggan.css';
+
+.pesanan-page {
+    min-height: 100vh;
+    background: var(--color-gray-50);
+}
+
+/* Status badge variants */
+.badge-default {
+    background: var(--color-gray-200);
+    color: var(--color-gray-700);
+}
+
+.badge-info {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.badge-warning {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.badge-success {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.badge-success-dark {
+    background: #059669;
+    color: white;
+}
+
+.badge-error {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+/* Clickable row */
+.clickable-row {
+    cursor: pointer;
+    transition: background-color var(--transition-normal);
+}
+
+.clickable-row:hover {
+    background-color: var(--color-gray-50);
+}
+
+/* Text colors */
+.text-error {
+    color: var(--color-error);
+}
+
+.text-success {
+    color: var(--color-success);
+}
