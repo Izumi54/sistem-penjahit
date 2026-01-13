@@ -1,10 +1,70 @@
-/* App Global Styles */
+/* App Global/* App Global Styles - Wireframe Light Theme */
+#root {
+  min-height: 100vh;
+  background: var(--gradient-bg);
+}
+
+.app {
+  min-height: 100vh;
+}
+
+/* Utility classes */
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.page-content {
+  padding: 2rem 0;
+}
+
+/* Text utilities */
+.text-center {
+  text-align: center;
+}
+
+.text-muted {
+  color: var(--color-gray-500);
+}
+
+/* Spacing utilities */
+.mt-sm {
+  margin-top: var(--spacing-sm);
+}
+
+.mt-md {
+  margin-top: var(--spacing-md);
+}
+
+.mt-lg {
+  margin-top: var(--spacing-lg);
+}
+
+.mb-md {
+  margin-bottom: var(--spacing-md);
+}
+
+.mb-lg {
+  margin-bottom: var(--spacing-lg);
+}
+
+/* Flex utilities */
+.flex {
+  display: flex;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.items-center {
+  align-items: center;
+}
+
 body {
   margin: 0;
   padding: 0;
-}
-
-#root {
   min-height: 100vh;
 }
 

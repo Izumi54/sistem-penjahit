@@ -12,6 +12,12 @@
     --color-primary-800: #5b21b6;
     --color-primary-900: #4c1d95;
 
+    /* Wireframe Design Colors */
+    --color-primary: #4F46E5;
+    /* Indigo for buttons/accents */
+    --color-primary-dark: #7C3AED;
+    /* Purple gradient end */
+
     /* Colors - Gray (Neutral) */
     --color-gray-50: #f9fafb;
     --color-gray-100: #f3f4f6;
@@ -33,6 +39,14 @@
     --color-error-light: #fee2e2;
     --color-info: #3b82f6;
     --color-info-light: #dbeafe;
+
+    /* Background Colors - Wireframe */
+    --bg-page: #F9FAFB;
+    /* Light gray for page background */
+    --bg-light-blue: #E0E7FF;
+    /* Light blue gradient */
+    --bg-white: #FFFFFF;
+    /* White cards */
 
     /* Spacing */
     --spacing-xs: 0.25rem;
@@ -66,6 +80,8 @@
     --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
     --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+    /* Wireframe card shadow */
 
     /* Typography */
     --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
@@ -90,6 +106,7 @@
 
     /* Z-index */
     --z-dropdown: 1000;
+    --z-header: 100;
     --z-modal: 2000;
     --z-tooltip: 3000;
 
@@ -98,9 +115,11 @@
     --transition-base: 300ms ease-in-out;
     --transition-slow: 500ms ease-in-out;
 
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    /* Gradients - Updated for Wireframe */
+    --gradient-primary: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+    --gradient-header: linear-gradient(90deg, #4F46E5 0%, #7C3AED 100%);
     --gradient-success: linear-gradient(135deg, #10b981 0%, #059669 100%);
     --gradient-warning: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
     --gradient-error: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    --gradient-bg: linear-gradient(180deg, #E0E7FF 0%, #F9FAFB 100%);
 }

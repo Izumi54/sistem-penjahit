@@ -78,14 +78,27 @@ function LineChart({ data }) {
             y: {
                 beginAtZero: true,
                 ticks: {
-                    stepSize: 1,
+                    precision: 0,
+                    callback: function (value) {
+                        if (Math.floor(value) === value) {
+                            return value;
+                        }
+                    }
                 },
             },
         },
+        layout: {
+            padding: {
+                top: 10,
+                right: 10,
+                bottom: 10,
+                left: 10,
+            }
+        }
     }
 
     return (
-        <div style={{ height: '300px' }}>
+        <div style={{ height: '350px', width: '100%' }}>
             <Line data={chartData} options={options} />
         </div>
     )

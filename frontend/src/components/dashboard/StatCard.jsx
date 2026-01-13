@@ -1,25 +1,20 @@
-function StatCard({ icon, title, value, subtitle, color = 'blue', loading }) {
-    const colorClasses = {
-        blue: 'stat-card-blue',
-        green: 'stat-card-green',
-        orange: 'stat-card-orange',
-        purple: 'stat-card-purple',
-        teal: 'stat-card-teal',
-        red: 'stat-card-red',
-    }
+import './StatCard.css'
 
+function StatCard({ icon, title, value, subtitle, loading }) {
     return (
-        <div className={`stat-card ${colorClasses[color]}`}>
-            <div className="stat-icon">{icon}</div>
-            <div className="stat-content">
-                <div className="stat-title">{title}</div>
+        <div className="stat-card-wireframe">
+            <div className="stat-icon-circle">
+                <span className="icon-emoji">{icon}</span>
+            </div>
+            <div className="stat-info">
+                <div className="stat-label">{title}</div>
                 {loading ? (
-                    <div className="stat-value">
-                        <div className="skeleton-text"></div>
+                    <div className="stat-number">
+                        <div className="skeleton-loader"></div>
                     </div>
                 ) : (
                     <>
-                        <div className="stat-value">{value}</div>
+                        <div className="stat-number">{value}</div>
                         {subtitle && <div className="stat-subtitle">{subtitle}</div>}
                     </>
                 )}

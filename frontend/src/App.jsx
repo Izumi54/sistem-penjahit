@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import useAuthStore from './stores/authStore'
 import ProtectedRoute from './components/common/ProtectedRoute'
+import Header from './components/Header'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import Pelanggan from './pages/Pelanggan'
@@ -35,7 +36,10 @@ function App() {
                     path="/dashboard"
                     element={
                         <ProtectedRoute>
-                            <Dashboard />
+                            <>
+                                <Header />
+                                <Dashboard />
+                            </>
                         </ProtectedRoute>
                     }
                 />
@@ -43,7 +47,10 @@ function App() {
                     path="/pelanggan"
                     element={
                         <ProtectedRoute>
-                            <Pelanggan />
+                            <>
+                                <Header />
+                                <Pelanggan />
+                            </>
                         </ProtectedRoute>
                     }
                 />
@@ -51,7 +58,10 @@ function App() {
                     path="/jenis-pakaian"
                     element={
                         <ProtectedRoute>
-                            <JenisPakaian />
+                            <>
+                                <Header />
+                                <JenisPakaian />
+                            </>
                         </ProtectedRoute>
                     }
                 />
@@ -59,7 +69,10 @@ function App() {
                     path="/pesanan"
                     element={
                         <ProtectedRoute>
-                            <Pesanan />
+                            <>
+                                <Header />
+                                <Pesanan />
+                            </>
                         </ProtectedRoute>
                     }
                 />
@@ -67,7 +80,10 @@ function App() {
                     path="/pesanan/baru"
                     element={
                         <ProtectedRoute>
-                            <InputPesanan />
+                            <>
+                                <Header />
+                                <InputPesanan />
+                            </>
                         </ProtectedRoute>
                     }
                 />
@@ -75,7 +91,10 @@ function App() {
                     path="/pesanan/:noNota"
                     element={
                         <ProtectedRoute>
-                            <DetailPesanan />
+                            <>
+                                <Header />
+                                <DetailPesanan />
+                            </>
                         </ProtectedRoute>
                     }
                 />
