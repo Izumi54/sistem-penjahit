@@ -11,12 +11,16 @@ function Pelanggan() {
     // Pagination & search
     const [page, setPage] = useState(1)
     const [totalPages, setTotalPages] = useState(1)
+    const [totalItems, setTotalItems] = useState(0)
     const [search, setSearch] = useState('')
     const [gender, setGender] = useState('')
+    const [sortBy, setSortBy] = useState('terbaru') // NEW: Sort filter
 
     // Modal state
     const [showModal, setShowModal] = useState(false)
     const [editData, setEditData] = useState(null)
+
+    const ITEMS_PER_PAGE = 10
 
     // Fetch pelanggan
     const fetchPelanggan = async () => {
@@ -25,12 +29,15 @@ function Pelanggan() {
         try {
             const data = await pelangganService.getAll({
                 page,
-                limit: 10,
+                limit: ITEMS_PER_PAGE,
                 search,
                 gender,
+                sortBy, // Send sortBy to backend
             })
+
             setPelanggan(data.data)
             setTotalPages(data.pagination.totalPages)
+            setTotalItems(data.pagination.total)
         } catch (err) {
             setError(err.response?.data?.error || 'Gagal mengambil data pelanggan')
         } finally {
@@ -40,7 +47,7 @@ function Pelanggan() {
 
     useEffect(() => {
         fetchPelanggan()
-    }, [page, search, gender])
+    }, [page, search, gender, sortBy]) // Added sortBy dependency
 
     const handleSearch = (e) => {
         setSearch(e.target.value)
@@ -49,6 +56,11 @@ function Pelanggan() {
 
     const handleFilterGender = (e) => {
         setGender(e.target.value)
+        setPage(1)
+    }
+
+    const handleSortChange = (e) => {
+        setSortBy(e.target.value)
         setPage(1)
     }
 
@@ -80,80 +92,139 @@ function Pelanggan() {
         fetchPelanggan() // Refresh list
     }
 
-    return (
-        <div className="pelanggan-page">
-            {/* Header */}
-            <div className="page-header">
-                <div className="container">
-                    <div className="flex justify-between items-center">
-                        <div>
-                            <h1 className="page-title">Kelola Pelanggan</h1>
-                            <p className="page-subtitle">
-                                Manajemen data pelanggan dan ukuran
-                            </p>
-                        </div>
-                        <button onClick={handleAdd} className="btn btn-primary">
-                            ➕ Tambah Pelanggan
-                        </button>
-                    </div>
-                </div>
-            </div>
+    // Format date
+    const formatDate = (dateString) => {
+        const date = new Date(dateString)
+        return date.toLocaleDateString('id-ID', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+        })
+    }
 
-            {/* Content */}
-            <div className="container page-content">
-                {/* Search & Filter */}
-                <div className="card mb-lg">
-                    <div className="search-filter-bar">
+    // Pagination helper
+    const startIndex = (page - 1) * ITEMS_PER_PAGE + 1
+    const endIndex = Math.min(page * ITEMS_PER_PAGE, totalItems)
+
+    // Generate page numbers for pagination
+    const getPageNumbers = () => {
+        const pages = []
+        const maxVisible = 5
+
+        if (totalPages <= maxVisible + 2) {
+            // Show all pages if total is small
+            for (let i = 1; i <= totalPages; i++) {
+                pages.push(i)
+            }
+        } else {
+            // Always show first page
+            pages.push(1)
+
+            if (page > 3) {
+                pages.push('...')
+            }
+
+            // Show current page and neighbors
+            const start = Math.max(2, page - 1)
+            const end = Math.min(totalPages - 1, page + 1)
+
+            for (let i = start; i <= end; i++) {
+                pages.push(i)
+            }
+
+            if (page < totalPages - 2) {
+                pages.push('...')
+            }
+
+            // Always show last page
+            pages.push(totalPages)
+        }
+
+        return pages
+    }
+
+    return (
+        <div className="pelanggan-wireframe">
+            <div className="container">
+                {/* Header */}
+                <div className="page-header-wireframe">
+                    <div>
+                        <h1 className="page-title-wireframe">Data Pelanggan</h1>
+                    </div>
+                    <button onClick={handleAdd} className="btn-add-wireframe">
+                        ➕ Tambah Pelanggan Baru
+                    </button>
+                </div>
+
+                {/* Search & Filter Bar */}
+                <div className="search-filter-wireframe">
+                    <div className="search-box-wireframe">
+                        <span className="search-icon">🔍</span>
                         <input
                             type="text"
-                            placeholder="🔍 Cari nama, nomor WA, atau email..."
-                            className="input search-input"
+                            placeholder="Cari nama, no WA..."
+                            className="search-input-wireframe"
                             value={search}
                             onChange={handleSearch}
                         />
-                        <select
-                            className="input"
-                            value={gender}
-                            onChange={handleFilterGender}
-                        >
-                            <option value="">Semua Gender</option>
-                            <option value="L">Laki-laki</option>
-                            <option value="P">Perempuan</option>
-                        </select>
                     </div>
+
+                    <select
+                        className="filter-select-wireframe"
+                        value={gender}
+                        onChange={handleFilterGender}
+                    >
+                        <option value="">Jenis Kelamin: Semua</option>
+                        <option value="L">Jenis Kelamin: Laki-laki</option>
+                        <option value="P">Jenis Kelamin: Perempuan</option>
+                    </select>
+
+                    <select
+                        className="filter-select-wireframe"
+                        value={sortBy}
+                        onChange={handleSortChange}
+                    >
+                        <option value="terbaru">Urutan: Terbaru</option>
+                        <option value="terlama">Urutan: Terlama</option>
+                        <option value="nama-az">Urutan: Nama A-Z</option>
+                        <option value="nama-za">Urutan: Nama Z-A</option>
+                    </select>
                 </div>
 
-                {/* Table */}
-                <div className="card">
+                {/* Table Card */}
+                <div className="table-card-wireframe">
                     {loading ? (
-                        <div className="text-center p-xl">
+                        <div className="loading-state">
                             <div className="spinner"></div>
-                            <p className="text-muted mt-md">Loading...</p>
+                            <p>Loading data pelanggan...</p>
                         </div>
                     ) : error ? (
-                        <div className="alert alert-error">
-                            {error}
+                        <div className="error-state">
+                            <p>{error}</p>
+                            <button onClick={fetchPelanggan} className="btn-retry">
+                                🔄 Coba Lagi
+                            </button>
                         </div>
                     ) : pelanggan.length === 0 ? (
-                        <div className="text-center p-xl">
-                            <p className="text-muted">
+                        <div className="empty-state">
+                            <p>
                                 {search || gender
                                     ? 'Tidak ada pelanggan yang sesuai filter'
-                                    : 'Belum ada data pelanggan. Tambah pelanggan pertama Anda!'}
+                                    : 'Belum ada data pelanggan'}
                             </p>
                         </div>
                     ) : (
                         <>
-                            <div className="table-responsive">
-                                <table className="table">
+                            <div className="table-wrapper-wireframe">
+                                <table className="table-wireframe">
                                     <thead>
                                         <tr>
                                             <th>Kode</th>
                                             <th>Nama Lengkap</th>
-                                            <th>Gender</th>
-                                            <th>No. WA</th>
-                                            <th>Email</th>
-                                            <th>Pesanan</th>
+                                            <th>Jenis Kelamin</th>
+                                            <th>No. WhatsApp</th>
+                                            <th>Total Pesanan</th>
+                                            <th>Terdaftar</th>
                                             <th>Aksi</th>
                                         </tr>
                                     </thead>
@@ -161,24 +232,31 @@ function Pelanggan() {
                                         {pelanggan.map((item) => (
                                             <tr key={item.idPelanggan}>
                                                 <td>
-                                                    <span className="badge badge-info">
-                                                        {item.idPelanggan}
-                                                    </span>
+                                                    <span className="kode-badge">{item.idPelanggan}</span>
                                                 </td>
-                                                <td className="font-semibold">{item.namaLengkap}</td>
+                                                <td className="nama-cell">{item.namaLengkap}</td>
                                                 <td>
-                                                    <span className="badge">
-                                                        {item.jenisKelamin === 'L' ? '👨 L' : '👩 P'}
+                                                    <span
+                                                        className={`gender-badge ${item.jenisKelamin === 'L'
+                                                                ? 'gender-badge-male'
+                                                                : 'gender-badge-female'
+                                                            }`}
+                                                    >
+                                                        {item.jenisKelamin}
                                                     </span>
                                                 </td>
                                                 <td>{item.noWa}</td>
-                                                <td>{item.email || '-'}</td>
-                                                <td>{item._count?.pesanan || 0}</td>
                                                 <td>
-                                                    <div className="flex gap-sm">
+                                                    <span className="pesanan-count">
+                                                        {item._count?.pesanan || 0}x
+                                                    </span>
+                                                </td>
+                                                <td className="date-cell">{formatDate(item.createdAt)}</td>
+                                                <td>
+                                                    <div className="action-buttons-wireframe">
                                                         <button
                                                             onClick={() => handleEdit(item)}
-                                                            className="btn btn-sm btn-secondary"
+                                                            className="action-btn action-btn-edit"
                                                             title="Edit"
                                                         >
                                                             ✏️
@@ -187,7 +265,7 @@ function Pelanggan() {
                                                             onClick={() =>
                                                                 handleDelete(item.idPelanggan, item.namaLengkap)
                                                             }
-                                                            className="btn btn-sm btn-error"
+                                                            className="action-btn action-btn-delete"
                                                             title="Hapus"
                                                         >
                                                             🗑️
@@ -201,27 +279,46 @@ function Pelanggan() {
                             </div>
 
                             {/* Pagination */}
-                            {totalPages > 1 && (
-                                <div className="pagination">
+                            <div className="pagination-wireframe">
+                                <div className="pagination-info-wireframe">
+                                    Showing {startIndex}-{endIndex} of {totalItems}
+                                </div>
+
+                                <div className="pagination-controls">
                                     <button
                                         onClick={() => setPage(page - 1)}
                                         disabled={page === 1}
-                                        className="btn btn-sm btn-secondary"
+                                        className="page-btn page-btn-nav"
                                     >
-                                        ← Prev
+                                        ‹
                                     </button>
-                                    <span className="pagination-info">
-                                        Halaman {page} dari {totalPages}
-                                    </span>
+
+                                    {getPageNumbers().map((pageNum, idx) =>
+                                        pageNum === '...' ? (
+                                            <span key={`ellipsis-${idx}`} className="page-ellipsis">
+                                                ...
+                                            </span>
+                                        ) : (
+                                            <button
+                                                key={pageNum}
+                                                onClick={() => setPage(pageNum)}
+                                                className={`page-btn ${page === pageNum ? 'page-btn-active' : ''
+                                                    }`}
+                                            >
+                                                {pageNum}
+                                            </button>
+                                        )
+                                    )}
+
                                     <button
                                         onClick={() => setPage(page + 1)}
                                         disabled={page === totalPages}
-                                        className="btn btn-sm btn-secondary"
+                                        className="page-btn page-btn-nav"
                                     >
-                                        Next →
+                                        ›
                                     </button>
                                 </div>
-                            )}
+                            </div>
                         </>
                     )}
                 </div>

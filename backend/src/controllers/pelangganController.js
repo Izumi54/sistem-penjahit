@@ -11,8 +11,7 @@ export const getAllPelanggan = async (req, res) => {
             limit = 10,
             search = '',
             gender = '',
-            sortBy = 'createdAt',
-            sortOrder = 'desc',
+            sortBy = 'terbaru', // Changed default to 'terbaru'
         } = req.query
 
         // Build where clause for search & filter
@@ -33,6 +32,26 @@ export const getAllPelanggan = async (req, res) => {
             ],
         }
 
+        // Map sortBy to actual orderBy clause
+        let orderBy = { createdAt: 'desc' } // default
+
+        switch (sortBy) {
+            case 'terbaru':
+                orderBy = { createdAt: 'desc' }
+                break
+            case 'terlama':
+                orderBy = { createdAt: 'asc' }
+                break
+            case 'nama-az':
+                orderBy = { namaLengkap: 'asc' }
+                break
+            case 'nama-za':
+                orderBy = { namaLengkap: 'desc' }
+                break
+            default:
+                orderBy = { createdAt: 'desc' }
+        }
+
         // Get total count for pagination
         const total = await prisma.pelanggan.count({ where })
 
@@ -41,7 +60,7 @@ export const getAllPelanggan = async (req, res) => {
             where,
             skip: (page - 1) * limit,
             take: parseInt(limit),
-            orderBy: { [sortBy]: sortOrder },
+            orderBy,
             select: {
                 idPelanggan: true,
                 namaLengkap: true,
