@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
 import { pesananService } from '../services/pesananService'
+import { pembayaranService } from '../services/pembayaranService'
 import './DetailPesanan.css'
 
 const STATUS_OPTIONS = ['ANTRI', 'POTONG', 'JAHIT', 'SELESAI', 'DIAMBIL', 'BATAL']
@@ -9,6 +10,8 @@ function DetailPesanan() {
     const { noNota } = useParams()
     const navigate = useNavigate()
     const [pesanan, setPesanan] = useState(null)
+    const [pembayaranList, setPembayaranList] = useState([])
+    const [pembayaranSummary, setPembayaranSummary] = useState(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
 
@@ -18,13 +21,25 @@ function DetailPesanan() {
     const [catatan, setCatatan] = useState('')
     const [updating, setUpdating] = useState(false)
 
+    // Pembayaran state
+    const [showPembayaranModal, setShowPembayaranModal] = useState(false)
+    const [jumlahBayar, setJumlahBayar] = useState('')
+    const [metodeBayar, setMetodeBayar] = useState('TUNAI')
+    const [keteranganBayar, setKeteranganBayar] = useState('')
+    const [submitting, setSubmitting] = useState(false)
+
     const fetchData = async () => {
         setLoading(true)
         setError(null)
         try {
-            const data = await pesananService.getById(noNota)
-            setPesanan(data.data)
-            setNewStatus(data.data.statusPesanan)
+            const [pesananData, pembayaranData] = await Promise.all([
+                pesananService.getById(noNota),
+                pembayaranService.getHistory(noNota),
+            ])
+            setPesanan(pesananData.data)
+            setNewStatus(pesananData.data.statusPesanan)
+            setPembayaranList(pembayaranData.data)
+            setPembayaranSummary(pembayaranData.summary)
         } catch (err) {
             setError(err.response?.data?.error || 'Gagal mengambil data')
         } finally {
@@ -55,6 +70,31 @@ function DetailPesanan() {
             alert(err.response?.data?.error || 'Gagal update status')
         } finally {
             setUpdating(false)
+        }
+    }
+
+    const handleInputPembayaran = async () => {
+        if (!jumlahBayar || jumlahBayar <= 0) {
+            alert('Jumlah bayar harus diisi dan lebih dari 0')
+            return
+        }
+
+        setSubmitting(true)
+        try {
+            await pembayaranService.create(noNota, {
+                jumlahBayar: parseInt(jumlahBayar),
+                metodeBayar,
+                keterangan: keteranganBayar,
+            })
+            setShowPembayaranModal(false)
+            setJumlahBayar('')
+            setMetodeBayar('TUNAI')
+            setKeteranganBayar('')
+            fetchData() // Reload data
+        } catch (err) {
+            alert(err.response?.data?.error || 'Gagal mencatat pembayaran')
+        } finally {
+            setSubmitting(false)
         }
     }
 
@@ -190,40 +230,67 @@ function DetailPesanan() {
 
                 {/* Pembayaran */}
                 <div className="card mt-md">
-                    <h2 className="section-title">💰 Ringkasan Pembayaran</h2>
+                    <div className="flex justify-between items-center mb-md">
+                        <h2 className="section-title">💰 Pembayaran</h2>
+                        {pembayaranSummary && pembayaranSummary.sisaBayar > 0 && (
+                            <button
+                                onClick={() => setShowPembayaranModal(true)}
+                                className="btn btn-primary btn-sm"
+                            >
+                                ➕ Input Pembayaran
+                            </button>
+                        )}
+                    </div>
+
                     <div className="payment-summary">
                         <div className="payment-row">
                             <span>Total Biaya:</span>
-                            <span>Rp {pesanan.totalBiaya.toLocaleString('id-ID')}</span>
+                            <span>
+                                Rp {pembayaranSummary ? pembayaranSummary.totalBiaya.toLocaleString('id-ID') : '0'}
+                            </span>
                         </div>
                         <div className="payment-row">
-                            <span>Total DP/Bayar:</span>
-                            <span>Rp {pesanan.totalDp.toLocaleString('id-ID')}</span>
+                            <span>Total Terbayar:</span>
+                            <span>
+                                Rp {pembayaranSummary ? pembayaranSummary.totalPaid.toLocaleString('id-ID') : '0'}
+                            </span>
                         </div>
                         <div className="payment-row total">
                             <span>Sisa Bayar:</span>
-                            <span className={pesanan.sisaBayar > 0 ? 'text-error' : 'text-success'}>
-                                Rp {pesanan.sisaBayar.toLocaleString('id-ID')}
+                            <span
+                                className={
+                                    pembayaranSummary && pembayaranSummary.sisaBayar > 0
+                                        ? 'text-error'
+                                        : 'text-success'
+                                }
+                            >
+                                Rp {pembayaranSummary ? pembayaranSummary.sisaBayar.toLocaleString('id-ID') : '0'}
                             </span>
                         </div>
                     </div>
 
-                    {pesanan.pembayaran && pesanan.pembayaran.length > 0 && (
+                    {pembayaranList && pembayaranList.length > 0 && (
                         <>
                             <h3 className="subsection-title">History Pembayaran</h3>
-                            <div className="payment-list">
-                                {pesanan.pembayaran.map((p) => (
+                            <div className="payment-history">
+                                {pembayaranList.map((p) => (
                                     <div key={p.idBayar} className="payment-item">
-                                        <div>
-                                            <div className="font-semibold">
-                                                {p.jenisBayar} - {p.metodeBayar}
+                                        <div className="payment-marker"></div>
+                                        <div className="payment-content">
+                                            <div className="payment-header">
+                                                <span className="payment-amount">
+                                                    Rp {p.nominal.toLocaleString('id-ID')}
+                                                </span>
+                                                <span className="payment-method">
+                                                    {p.jenisBayar} - {p.metodeBayar}
+                                                </span>
                                             </div>
-                                            <div className="text-sm text-muted">
-                                                {new Date(p.tglBayar).toLocaleDateString('id-ID')}
+                                            <div className="payment-date">
+                                                {new Date(p.tglBayar).toLocaleString('id-ID')}
                                             </div>
-                                        </div>
-                                        <div className="font-semibold">
-                                            Rp {p.nominal.toLocaleString('id-ID')}
+                                            {p.catatan && (
+                                                <div className="payment-note">{p.catatan}</div>
+                                            )}
                                         </div>
                                     </div>
                                 ))}
@@ -317,6 +384,80 @@ function DetailPesanan() {
                                 disabled={updating}
                             >
                                 {updating ? '⏳ Updating...' : '💾 Update Status'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Input Pembayaran Modal */}
+            {showPembayaranModal && (
+                <div className="modal-overlay" onClick={() => setShowPembayaranModal(false)}>
+                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h2 className="modal-title">💰 Input Pembayaran</h2>
+                            <button onClick={() => setShowPembayaranModal(false)} className="modal-close">
+                                ✕
+                            </button>
+                        </div>
+                        <div className="modal-body">
+                            {pembayaranSummary && (
+                                <div className="alert alert-info mb-md">
+                                    Sisa Bayar: <strong>Rp {pembayaranSummary.sisaBayar.toLocaleString('id-ID')}</strong>
+                                </div>
+                            )}
+
+                            <div className="form-group">
+                                <label className="form-label required">Jumlah Bayar</label>
+                                <input
+                                    type="number"
+                                    className="input"
+                                    placeholder="Masukkan jumlah"
+                                    value={jumlahBayar}
+                                    onChange={(e) => setJumlahBayar(e.target.value)}
+                                    max={pembayaranSummary ? pembayaranSummary.sisaBayar : undefined}
+                                />
+                            </div>
+
+                            <div className="form-group">
+                                <label className="form-label required">Metode Bayar</label>
+                                <select
+                                    className="input"
+                                    value={metodeBayar}
+                                    onChange={(e) => setMetodeBayar(e.target.value)}
+                                >
+                                    <option value="TUNAI">Tunai</option>
+                                    <option value="TRANSFER">Transfer</option>
+                                    <option value="QRIS">QRIS</option>
+                                    <option value="LAINNYA">Lainnya</option>
+                                </select>
+                            </div>
+
+                            <div className="form-group">
+                                <label className="form-label">Keterangan (Opsional)</label>
+                                <textarea
+                                    className="input"
+                                    rows="3"
+                                    placeholder="Catatan pembayaran (misal: Cicilan ke-1)"
+                                    value={keteranganBayar}
+                                    onChange={(e) => setKeteranganBayar(e.target.value)}
+                                />
+                            </div>
+                        </div>
+                        <div className="modal-footer">
+                            <button
+                                onClick={() => setShowPembayaranModal(false)}
+                                className="btn btn-secondary"
+                                disabled={submitting}
+                            >
+                                Batal
+                            </button>
+                            <button
+                                onClick={handleInputPembayaran}
+                                className="btn btn-primary"
+                                disabled={submitting}
+                            >
+                                {submitting ? '⏳ Menyimpan...' : '💾 Simpan Pembayaran'}
                             </button>
                         </div>
                     </div>

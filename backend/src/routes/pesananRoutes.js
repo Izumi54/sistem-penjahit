@@ -1,6 +1,7 @@
 import express from 'express'
 import * as pesananController from '../controllers/pesananController.js'
 import { authMiddleware } from '../middlewares/auth.js'
+import pembayaranRoutes from './pembayaranRoutes.js'
 
 const router = express.Router()
 
@@ -16,5 +17,8 @@ router.delete('/:noNota', pesananController.deletePesanan)
 
 // History
 router.get('/:noNota/history', pesananController.getHistoryStatus)
+
+// Pembayaran (nested routes)
+router.use('/:noNota/pembayaran', pembayaranRoutes)
 
 export default router
