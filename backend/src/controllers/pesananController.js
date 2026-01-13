@@ -11,8 +11,7 @@ export const getAllPesanan = async (req, res) => {
             limit = 10,
             search = '',
             status = '',
-            sortBy = 'tglMasuk',
-            sortOrder = 'desc',
+            sortBy = 'terbaru',
         } = req.query
 
         // Build where clause
@@ -36,13 +35,33 @@ export const getAllPesanan = async (req, res) => {
             ],
         }
 
+        // Map sortBy to orderBy clause
+        let orderBy = { tglMasuk: 'desc' } // default
+
+        switch (sortBy) {
+            case 'terbaru':
+                orderBy = { tglMasuk: 'desc' }
+                break
+            case 'terlama':
+                orderBy = { tglMasuk: 'asc' }
+                break
+            case 'total-tinggi':
+                orderBy = { totalBiaya: 'desc' }
+                break
+            case 'total-rendah':
+                orderBy = { totalBiaya: 'asc' }
+                break
+            default:
+                orderBy = { tglMasuk: 'desc' }
+        }
+
         const total = await prisma.pesanan.count({ where })
 
         const pesanan = await prisma.pesanan.findMany({
             where,
             skip: (page - 1) * limit,
             take: parseInt(limit),
-            orderBy: { [sortBy]: sortOrder },
+            orderBy,
             include: {
                 pelanggan: {
                     select: {

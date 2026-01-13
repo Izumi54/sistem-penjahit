@@ -1,57 +1,205 @@
-/* Pesanan Page - reuse Pelanggan styles */
-@import './Pelanggan.css';
+/* List Pesanan - Wireframe Design (Based on Pelanggan) */
 
-.pesanan-page {
-    min-height: 100vh;
+.pesanan-wireframe {
+    min-height: calc(100vh - 64px);
+    padding: 2rem 0;
+    background: var(--bg-page);
+}
+
+.pesanan-wireframe .container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+/* Reuse all wireframe styles from Pelanggan */
+.pesanan-wireframe .page-header-wireframe,
+.pesanan-wireframe .btn-add-wireframe,
+.pesanan-wireframe .search-filter-wireframe,
+.pesanan-wireframe .search-box-wireframe,
+.pesanan-wireframe .search-icon,
+.pesanan-wireframe .search-input-wireframe,
+.pesanan-wireframe .filter-select-wireframe,
+.pesanan-wireframe .table-card-wireframe,
+.pesanan-wireframe .table-wrapper-wireframe,
+.pesanan-wireframe .table-wireframe,
+.pesanan-wireframe .pagination-wireframe,
+.pesanan-wireframe .pagination-info-wireframe,
+.pesanan-wireframe .pagination-controls,
+.pesanan-wireframe .page-btn,
+.pesanan-wireframe .page-btn-active,
+.pesanan-wireframe .page-btn-nav,
+.pesanan-wireframe .page-ellipsis,
+.pesanan-wireframe .loading-state,
+.pesanan-wireframe .error-state,
+.pesanan-wireframe .empty-state,
+.pesanan-wireframe .spinner,
+.pesanan-wireframe .btn-retry,
+.pesanan-wireframe .action-buttons-wireframe,
+.pesanan-wireframe .action-btn {
+    /* Inherit from Pelanggan.css */
+}
+
+/* Pesanan-specific styles */
+
+/* No Nota Badge */
+.nota-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+    color: white;
+    font-size: var(--text-xs);
+    font-weight: 700;
+    border-radius: var(--radius-sm);
+    letter-spacing: 0.5px;
+}
+
+.nama-cell {
+    font-weight: 600;
+    color: var(--color-gray-900);
+}
+
+.date-cell {
+    color: var(--color-gray-600);
+    font-size: var(--text-sm);
+}
+
+.currency-cell {
+    font-weight: 600;
+    color: var(--color-gray-900);
+}
+
+/* Status Badges - Colored by Status */
+.status-badge {
+    display: inline-block;
+    padding: 0.375rem 0.75rem;
+    border-radius: var(--radius-sm);
+    font-size: var(--text-xs);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-badge-gray {
+    background: #F3F4F6;
+    color: #6B7280;
+}
+
+.status-badge-blue {
+    background: #DBEAFE;
+    color: #1E40AF;
+}
+
+.status-badge-yellow {
+    background: #FEF3C7;
+    color: #92400E;
+}
+
+.status-badge-green {
+    background: #D1FAE5;
+    color: #065F46;
+}
+
+.status-badge-teal {
+    background: #CCFBF1;
+    color: #115E59;
+}
+
+.status-badge-red {
+    background: #FEE2E2;
+    color: #991B1B;
+}
+
+/* Sisa Bayar */
+.sisa-bayar-pending {
+    color: var(--color-error);
+    font-weight: 700;
+}
+
+.sisa-bayar-lunas {
+    color: var(--color-success);
+    font-weight: 600;
+}
+
+/* Clickable Row */
+.clickable-row-wireframe {
+    cursor: pointer;
+    transition: background var(--transition-fast);
+}
+
+.clickable-row-wireframe:hover {
     background: var(--color-gray-50);
 }
 
-/* Status badge variants */
-.badge-default {
-    background: var(--color-gray-200);
-    color: var(--color-gray-700);
-}
-
-.badge-info {
-    background: #dbeafe;
-    color: #1e40af;
-}
-
-.badge-warning {
-    background: #fef3c7;
-    color: #92400e;
-}
-
-.badge-success {
-    background: #d1fae5;
-    color: #065f46;
-}
-
-.badge-success-dark {
-    background: #059669;
-    color: white;
-}
-
-.badge-error {
-    background: #fee2e2;
-    color: #991b1b;
-}
-
-/* Clickable row */
-.clickable-row {
+/* Action Button - View only */
+.action-btn-view {
+    background: rgba(79, 70, 229, 0.1);
+    color: var(--color-primary);
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-sm);
+    border: none;
     cursor: pointer;
-    transition: background-color var(--transition-normal);
+    transition: all var(--transition-fast);
+    font-size: 1rem;
 }
 
-.clickable-row:hover {
-    background-color: var(--color-gray-50);
+.action-btn-view:hover {
+    background: rgba(79, 70, 229, 0.2);
+    transform: scale(1.1);
 }
 
-/* Text colors */
-.text-error {
-    color: var(--color-error);
+/* Responsive */
+@media (max-width: 1024px) {
+    .pesanan-wireframe .search-filter-wireframe {
+        flex-wrap: wrap;
+    }
+
+    .pesanan-wireframe .filter-select-wireframe {
+        flex: 1;
+        min-width: 150px;
+    }
 }
 
-.text-success {
-    color: var(--color-success);
+@media (max-width: 768px) {
+    .pesanan-wireframe .container {
+        padding: 0 1rem;
+    }
+
+    .pesanan-wireframe .page-header-wireframe {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .pesanan-wireframe .btn-add-wireframe {
+        width: 100%;
+    }
+
+    .pesanan-wireframe .search-filter-wireframe {
+        flex-direction: column;
+    }
+
+    .pesanan-wireframe .table-wireframe {
+        font-size: var(--text-xs);
+    }
+
+    .pesanan-wireframe .table-wireframe th,
+    .pesanan-wireframe .table-wireframe td {
+        padding: 0.75rem 0.5rem;
+    }
+
+    .pesanan-wireframe .pagination-wireframe {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .pesanan-wireframe .page-btn {
+        min-width: 32px;
+        height: 32px;
+        font-size: var(--text-xs);
+    }
 }

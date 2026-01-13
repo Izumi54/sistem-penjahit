@@ -15,13 +15,12 @@ function DetailPesanan() {
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
 
-    // Update status state
+    // Modal states
     const [showStatusModal, setShowStatusModal] = useState(false)
     const [newStatus, setNewStatus] = useState('')
     const [catatan, setCatatan] = useState('')
     const [updating, setUpdating] = useState(false)
 
-    // Pembayaran state
     const [showPembayaranModal, setShowPembayaranModal] = useState(false)
     const [jumlahBayar, setJumlahBayar] = useState('')
     const [metodeBayar, setMetodeBayar] = useState('TUNAI')
@@ -65,7 +64,7 @@ function DetailPesanan() {
             })
             setShowStatusModal(false)
             setCatatan('')
-            fetchData() // Reload data
+            fetchData()
         } catch (err) {
             alert(err.response?.data?.error || 'Gagal update status')
         } finally {
@@ -90,7 +89,7 @@ function DetailPesanan() {
             setJumlahBayar('')
             setMetodeBayar('TUNAI')
             setKeteranganBayar('')
-            fetchData() // Reload data
+            fetchData()
         } catch (err) {
             alert(err.response?.data?.error || 'Gagal mencatat pembayaran')
         } finally {
@@ -98,25 +97,53 @@ function DetailPesanan() {
         }
     }
 
+    const formatCurrency = (value) => {
+        return new Intl.NumberFormat('id-ID', {
+            style: 'currency',
+            currency: 'IDR',
+            minimumFractionDigits: 0,
+        }).format(value)
+    }
+
+    const formatDate = (dateString) => {
+        const date = new Date(dateString)
+        return date.toLocaleDateString('id-ID', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+        })
+    }
+
+    const formatDateTime = (dateString) => {
+        const date = new Date(dateString)
+        return date.toLocaleString('id-ID', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+        })
+    }
+
     const getStatusBadgeClass = (status) => {
         const map = {
-            ANTRI: 'badge-default',
-            POTONG: 'badge-info',
-            JAHIT: 'badge-warning',
-            SELESAI: 'badge-success',
-            DIAMBIL: 'badge-success-dark',
-            BATAL: 'badge-error',
+            ANTRI: 'status-badge-gray',
+            POTONG: 'status-badge-blue',
+            JAHIT: 'status-badge-yellow',
+            SELESAI: 'status-badge-green',
+            DIAMBIL: 'status-badge-teal',
+            BATAL: 'status-badge-red',
         }
-        return map[status] || 'badge-default'
+        return map[status] || 'status-badge-gray'
     }
 
     if (loading) {
         return (
-            <div className="detail-pesanan-page">
+            <div className="detail-pesanan-wireframe">
                 <div className="container">
-                    <div className="text-center p-xl">
+                    <div className="loading-state-detail">
                         <div className="spinner"></div>
-                        <p className="text-muted mt-md">Loading...</p>
+                        <p>Loading data pesanan...</p>
                     </div>
                 </div>
             </div>
@@ -125,339 +152,326 @@ function DetailPesanan() {
 
     if (error || !pesanan) {
         return (
-            <div className="detail-pesanan-page">
+            <div className="detail-pesanan-wireframe">
                 <div className="container">
-                    <div className="alert alert-error">{error || 'Pesanan tidak ditemukan'}</div>
-                    <Link to="/pesanan" className="btn btn-secondary mt-md">
-                        ← Kembali ke List
-                    </Link>
+                    <div className="error-state-detail">
+                        <p>{error || 'Pesanan tidak ditemukan'}</p>
+                        <button onClick={() => navigate('/pesanan')} className="btn-back">
+                            ← Kembali ke List Pesanan
+                        </button>
+                    </div>
                 </div>
             </div>
         )
     }
 
     return (
-        <div className="detail-pesanan-page">
-            {/* Header */}
-            <div className="page-header">
-                <div className="container">
-                    <div className="breadcrumb">
-                        <Link to="/dashboard">Dashboard</Link> / <Link to="/pesanan">Pesanan</Link> / {noNota}
+        <div className="detail-pesanan-wireframe">
+            <div className="container">
+                {/* Breadcrumb */}
+                <div className="breadcrumb-wireframe">
+                    <Link to="/dashboard" className="breadcrumb-link">Dashboard</Link>
+                    <span className="breadcrumb-separator">/</span>
+                    <Link to="/pesanan" className="breadcrumb-link">Pesanan</Link>
+                    <span className="breadcrumb-separator">/</span>
+                    <span className="breadcrumb-current">{noNota}</span>
+                </div>
+
+                {/* Page Header */}
+                <div className="page-header-detail">
+                    <div className="header-left">
+                        <h1 className="page-title-detail">Pesanan {noNota}</h1>
+                        <span className={`status-badge ${getStatusBadgeClass(pesanan.statusPesanan)}`}>
+                            {pesanan.statusPesanan}
+                        </span>
                     </div>
-                    <div className="flex justify-between items-center mt-sm">
-                        <div>
-                            <h1 className="page-title">Pesanan {noNota}</h1>
-                            <span className={`badge ${getStatusBadgeClass(pesanan.statusPesanan)}`}>
-                                {pesanan.statusPesanan}
-                            </span>
-                        </div>
+                    <div className="header-actions">
+                        {pesanan.statusPesanan === 'ANTRI' && (
+                            <button
+                                onClick={() => navigate(`/pesanan/edit/${noNota}`)}
+                                className="btn-action btn-edit"
+                                title="Edit Pesanan"
+                            >
+                                ✏️ Edit
+                            </button>
+                        )}
+                        <button
+                            onClick={() => window.open(`https://wa.me/${pesanan.pelanggan.noWa}?text=Halo ${pesanan.pelanggan.namaLengkap}, pesanan Anda ${noNota} status: ${pesanan.statusPesanan}`, '_blank')}
+                            className="btn-action btn-whatsapp"
+                            title="Kirim WhatsApp"
+                        >
+                            📱 WhatsApp
+                        </button>
+                        <button
+                            onClick={() => window.print()}
+                            className="btn-action btn-print"
+                            title="Print Nota"
+                        >
+                            🖨️ Print
+                        </button>
                         <button
                             onClick={() => setShowStatusModal(true)}
-                            className="btn btn-primary"
+                            className="btn-update-status"
                         >
                             🔄 Update Status
                         </button>
                     </div>
                 </div>
-            </div>
 
-            <div className="container page-content">
-                {/* Pelanggan Info */}
-                <div className="card">
-                    <h2 className="section-title">👤 Informasi Pelanggan</h2>
-                    <div className="info-grid">
-                        <div className="info-item">
-                            <span className="info-label">Nama:</span>
-                            <span className="info-value">{pesanan.pelanggan.namaLengkap}</span>
+                {/* Main Content */}
+                <div className="detail-content">
+                    {/* Informasi Pelanggan */}
+                    <div className="card-section">
+                        <div className="section-header">
+                            <span className="section-icon">👤</span>
+                            <h3 className="section-title">Informasi Pelanggan</h3>
                         </div>
-                        <div className="info-item">
-                            <span className="info-label">No. WA:</span>
-                            <span className="info-value">{pesanan.pelanggan.noWa}</span>
-                        </div>
-                        <div className="info-item">
-                            <span className="info-label">Tgl Masuk:</span>
-                            <span className="info-value">
-                                {new Date(pesanan.tglMasuk).toLocaleDateString('id-ID')}
-                            </span>
-                        </div>
-                        <div className="info-item">
-                            <span className="info-label">Tgl Janji Selesai:</span>
-                            <span className="info-value">
-                                {new Date(pesanan.tglJanjiSelesai).toLocaleDateString('id-ID')}
-                            </span>
-                        </div>
+                        <div className="info-grid">
+                            <div className="info-row">
+                                <span className="info-label">Nama:</span>
+                                <span className="info-value">{pesanan.pelanggan.namaLengkap}</span>
+                            </div>
+                            <div className="info-row">
+                                <span className="info-label">No. WA:</span>
+                                <span className="info-value">
+                                    <a href={`https://wa.me/${pesanan.pelanggan.noWa}`} target="_blank" rel="noopener noreferrer" className="wa-link">
+                                        {pesanan.pelanggan.noWa}
+                                    </a>
+                                </span>
+                            </div>
+                            <div className="info-row">
+                                <span className="info-label">Email:</span>
+                                <span className="info-value">{pesanan.pelanggan.email || '-'}</span>
+                            </div>
+                            <div className="info-row">
+                                <span className="info-label">Alamat:</span>
+                                <span className="info-value">{pesanan.pelanggan.alamat || '-'}</span>
+                            </div>
+                            <div className="info-row">
+                                <span className="info-label">Tgl Masuk:</span>
+                                <span className="info-value">{formatDate(pesanan.tglMasuk)}</span>
+                            </div>
+                            <div className="info-row">
+                                <span className="info-label">Tgl Janji Selesai:</span>
+                                <span className="info-value">{formatDate(pesanan.tglJanjiSelesai)}</span>
+                            </div>              </div>
                     </div>
-                </div>
 
-                {/* Detail Items */}
-                <div className="card mt-md">
-                    <h2 className="section-title">📦 Detail Pesanan</h2>
-                    <div className="table-responsive">
-                        <table className="table">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Jenis</th>
-                                    <th>Nama Item</th>
-                                    <th>Model</th>
-                                    <th>Qty</th>
-                                    <th>Harga</th>
-                                    <th>Subtotal</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {pesanan.detailPesanan.map((item, index) => (
-                                    <tr key={item.idDetail}>
-                                        <td>{index + 1}</td>
-                                        <td>{item.jenisPakaian.namaJenis}</td>
-                                        <td className="font-semibold">{item.namaItem}</td>
-                                        <td>{item.modelSpesifik || '-'}</td>
-                                        <td>{item.jumlahPcs}</td>
-                                        <td>Rp {item.hargaSatuan.toLocaleString('id-ID')}</td>
-                                        <td>Rp {item.subtotal.toLocaleString('id-ID')}</td>
+                    {/* Detail Pesanan */}
+                    <div className="card-section">
+                        <div className="section-header">
+                            <span className="section-icon">📦</span>
+                            <h3 className="section-title">Detail Pesanan</h3>
+                        </div>
+                        <div className="table-wrapper-detail">
+                            <table className="table-detail">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Jenis</th>
+                                        <th>Nama Item</th>
+                                        <th>Model</th>
+                                        <th>Qty</th>
+                                        <th>Harga</th>
+                                        <th>Subtotal</th>
                                     </tr>
-                                ))}
-                            </tbody>
-                            <tfoot>
-                                <tr>
-                                    <th colSpan="6">Total Biaya</th>
-                                    <th>Rp {pesanan.totalBiaya.toLocaleString('id-ID')}</th>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
-                </div>
-
-                {/* Pembayaran */}
-                <div className="card mt-md">
-                    <div className="flex justify-between items-center mb-md">
-                        <h2 className="section-title">💰 Pembayaran</h2>
-                        {pembayaranSummary && pembayaranSummary.sisaBayar > 0 && (
-                            <button
-                                onClick={() => setShowPembayaranModal(true)}
-                                className="btn btn-primary btn-sm"
-                            >
-                                ➕ Input Pembayaran
-                            </button>
-                        )}
-                    </div>
-
-                    <div className="payment-summary">
-                        <div className="payment-row">
-                            <span>Total Biaya:</span>
-                            <span>
-                                Rp {pembayaranSummary ? pembayaranSummary.totalBiaya.toLocaleString('id-ID') : '0'}
-                            </span>
-                        </div>
-                        <div className="payment-row">
-                            <span>Total Terbayar:</span>
-                            <span>
-                                Rp {pembayaranSummary ? pembayaranSummary.totalPaid.toLocaleString('id-ID') : '0'}
-                            </span>
-                        </div>
-                        <div className="payment-row total">
-                            <span>Sisa Bayar:</span>
-                            <span
-                                className={
-                                    pembayaranSummary && pembayaranSummary.sisaBayar > 0
-                                        ? 'text-error'
-                                        : 'text-success'
-                                }
-                            >
-                                Rp {pembayaranSummary ? pembayaranSummary.sisaBayar.toLocaleString('id-ID') : '0'}
-                            </span>
+                                </thead>
+                                <tbody>
+                                    {pesanan.detailPesanan.map((item, index) => (
+                                        <tr key={item.idDetail}>
+                                            <td>{index + 1}</td>
+                                            <td>{item.jenisPakaian.namaJenis}</td>
+                                            <td>{item.namaItem}</td>
+                                            <td>{item.model || '-'}</td>
+                                            <td>{item.qty}</td>
+                                            <td>{formatCurrency(item.harga)}</td>
+                                            <td className="subtotal-cell">{formatCurrency(item.subtotal)}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colSpan="6" className="total-label">Total Biaya</td>
+                                        <td className="total-value">{formatCurrency(pesanan.totalBiaya)}</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
                         </div>
                     </div>
 
-                    {pembayaranList && pembayaranList.length > 0 && (
-                        <>
-                            <h3 className="subsection-title">History Pembayaran</h3>
-                            <div className="payment-history">
-                                {pembayaranList.map((p) => (
-                                    <div key={p.idBayar} className="payment-item">
-                                        <div className="payment-marker"></div>
-                                        <div className="payment-content">
-                                            <div className="payment-header">
-                                                <span className="payment-amount">
-                                                    Rp {p.nominal.toLocaleString('id-ID')}
-                                                </span>
-                                                <span className="payment-method">
-                                                    {p.jenisBayar} - {p.metodeBayar}
-                                                </span>
+                    {/* Pembayaran */}
+                    <div className="card-section">
+                        <div className="section-header">
+                            <span className="section-icon">💰</span>
+                            <h3 className="section-title">Pembayaran</h3>
+                        </div>
+
+                        <div className="pembayaran-summary">
+                            <div className="summary-row">
+                                <span>Total Biaya:</span>
+                                <span>{formatCurrency(pembayaranSummary?.totalBiaya || pesanan.totalBiaya)}</span>
+                            </div>
+                            <div className="summary-row">
+                                <span>Total Terbayar:</span>
+                                <span>{formatCurrency(pembayaranSummary?.totalTerbayar || 0)}</span>
+                            </div>
+                            <div className="summary-row sisa-bayar-row">
+                                <span>Sisa Bayar:</span>
+                                <span className={pesanan.sisaBayar > 0 ? 'sisa-bayar-pending-detail' : 'sisa-bayar-lunas-detail'}>
+                                    {formatCurrency(pesanan.sisaBayar)}
+                                </span>
+                            </div>
+                        </div>
+
+                        {pembayaranList.length > 0 && (
+                            <>
+                                <h4 className="subsection-title">History Pembayaran</h4>
+                                <div className="pembayaran-timeline">
+                                    {pembayaranList.map((bayar) => (
+                                        <div key={bayar.idBayar} className="timeline-item">
+                                            <div className="timeline-marker success">✓</div>
+                                            <div className="timeline-content">
+                                                <div className="timeline-amount">{formatCurrency(bayar.nominal)}</div>
+                                                <div className="timeline-meta">
+                                                    {bayar.metodeBayar} • {formatDateTime(bayar.createdAt)}
+                                                </div>
+                                                {bayar.catatan && (
+                                                    <div className="timeline-note">{bayar.catatan}</div>
+                                                )}
                                             </div>
-                                            <div className="payment-date">
-                                                {new Date(p.tglBayar).toLocaleString('id-ID')}
-                                            </div>
-                                            {p.catatan && (
-                                                <div className="payment-note">{p.catatan}</div>
-                                            )}
                                         </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </>
-                    )}
-                </div>
-
-                {/* History Status */}
-                <div className="card mt-md">
-                    <h2 className="section-title">📝 History Status</h2>
-                    <div className="history-timeline">
-                        {pesanan.historyStatus.map((h) => (
-                            <div key={h.idHistory} className="history-item">
-                                <div className="history-marker"></div>
-                                <div className="history-content">
-                                    <div className="history-header">
-                                        <span className={`badge ${getStatusBadgeClass(h.statusBaru)}`}>
-                                            {h.statusBaru}
-                                        </span>
-                                        <span className="text-sm text-muted">
-                                            {new Date(h.createdAt).toLocaleString('id-ID')}
-                                        </span>
-                                    </div>
-                                    {h.catatanPerubahan && (
-                                        <div className="history-note">{h.catatanPerubahan}</div>
-                                    )}
-                                    <div className="history-user">oleh {h.user.namaLengkap}</div>
+                                    ))}
                                 </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
+                            </>
+                        )}
 
-                {/* Actions */}
-                <div className="actions-footer mt-lg">
-                    <Link to="/pesanan" className="btn btn-secondary">
-                        ← Kembali ke List
-                    </Link>
+                        <button
+                            onClick={() => setShowPembayaranModal(true)}
+                            className="btn-input-payment"
+                            disabled={pesanan.sisaBayar <= 0}
+                        >
+                            ➕ Input Pembayaran
+                        </button>
+                    </div>
+
+                    {/* Foto Referensi - Placeholder */}
+                    <div className="card-section">
+                        <div className="section-header">
+                            <span className="section-icon">📸</span>
+                            <h3 className="section-title">Foto Referensi</h3>
+                        </div>
+                        <div className="foto-placeholder">
+                            <div className="placeholder-icon">📸</div>
+                            <p>Fitur foto referensi akan segera hadir</p>
+                            <small>Upload foto model pakaian untuk referensi penjahit</small>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            {/* Update Status Modal */}
+            {/* Status Update Modal */}
             {showStatusModal && (
                 <div className="modal-overlay" onClick={() => setShowStatusModal(false)}>
                     <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                        <div className="modal-header">
-                            <h2 className="modal-title">🔄 Update Status Pesanan</h2>
-                            <button onClick={() => setShowStatusModal(false)} className="modal-close">
-                                ✕
-                            </button>
-                        </div>
+                        <h3 className="modal-title">Update Status Pesanan</h3>
                         <div className="modal-body">
                             <div className="form-group">
-                                <label className="form-label required">Status Baru</label>
+                                <label>Status Baru:</label>
                                 <select
-                                    className="input"
                                     value={newStatus}
                                     onChange={(e) => setNewStatus(e.target.value)}
+                                    className="input-wireframe"
                                 >
-                                    {STATUS_OPTIONS.map((s) => (
-                                        <option key={s} value={s}>
-                                            {s}
+                                    {STATUS_OPTIONS.map((status) => (
+                                        <option key={status} value={status}>
+                                            {status}
                                         </option>
                                     ))}
                                 </select>
                             </div>
-
                             <div className="form-group">
-                                <label className="form-label">Catatan (Opsional)</label>
+                                <label>Catatan:</label>
                                 <textarea
-                                    className="input"
-                                    rows="3"
-                                    placeholder="Catatan perubahan status"
                                     value={catatan}
                                     onChange={(e) => setCatatan(e.target.value)}
+                                    className="input-wireframe"
+                                    rows="3"
+                                    placeholder="Tambah catatan (opsional)"
                                 />
                             </div>
                         </div>
-                        <div className="modal-footer">
+                        <div className="modal-actions">
                             <button
                                 onClick={() => setShowStatusModal(false)}
-                                className="btn btn-secondary"
+                                className="btn-cancel"
                                 disabled={updating}
                             >
                                 Batal
                             </button>
                             <button
                                 onClick={handleUpdateStatus}
-                                className="btn btn-primary"
+                                className="btn-confirm"
                                 disabled={updating}
                             >
-                                {updating ? '⏳ Updating...' : '💾 Update Status'}
+                                {updating ? 'Loading...' : 'Update'}
                             </button>
                         </div>
                     </div>
                 </div>
             )}
 
-            {/* Input Pembayaran Modal */}
+            {/* Pembayaran Modal */}
             {showPembayaranModal && (
                 <div className="modal-overlay" onClick={() => setShowPembayaranModal(false)}>
                     <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                        <div className="modal-header">
-                            <h2 className="modal-title">💰 Input Pembayaran</h2>
-                            <button onClick={() => setShowPembayaranModal(false)} className="modal-close">
-                                ✕
-                            </button>
-                        </div>
+                        <h3 className="modal-title">Input Pembayaran</h3>
                         <div className="modal-body">
-                            {pembayaranSummary && (
-                                <div className="alert alert-info mb-md">
-                                    Sisa Bayar: <strong>Rp {pembayaranSummary.sisaBayar.toLocaleString('id-ID')}</strong>
-                                </div>
-                            )}
-
                             <div className="form-group">
-                                <label className="form-label required">Jumlah Bayar</label>
+                                <label>Jumlah Bayar:</label>
                                 <input
                                     type="number"
-                                    className="input"
-                                    placeholder="Masukkan jumlah"
                                     value={jumlahBayar}
                                     onChange={(e) => setJumlahBayar(e.target.value)}
-                                    max={pembayaranSummary ? pembayaranSummary.sisaBayar : undefined}
+                                    className="input-wireframe"
+                                    placeholder="Masukkan jumlah"
                                 />
                             </div>
-
                             <div className="form-group">
-                                <label className="form-label required">Metode Bayar</label>
+                                <label>Metode Bayar:</label>
                                 <select
-                                    className="input"
                                     value={metodeBayar}
                                     onChange={(e) => setMetodeBayar(e.target.value)}
+                                    className="input-wireframe"
                                 >
                                     <option value="TUNAI">Tunai</option>
                                     <option value="TRANSFER">Transfer</option>
-                                    <option value="QRIS">QRIS</option>
-                                    <option value="LAINNYA">Lainnya</option>
                                 </select>
                             </div>
-
                             <div className="form-group">
-                                <label className="form-label">Keterangan (Opsional)</label>
+                                <label>Keterangan:</label>
                                 <textarea
-                                    className="input"
-                                    rows="3"
-                                    placeholder="Catatan pembayaran (misal: Cicilan ke-1)"
                                     value={keteranganBayar}
                                     onChange={(e) => setKeteranganBayar(e.target.value)}
+                                    className="input-wireframe"
+                                    rows="2"
+                                    placeholder="Catatan (opsional)"
                                 />
                             </div>
                         </div>
-                        <div className="modal-footer">
+                        <div className="modal-actions">
                             <button
                                 onClick={() => setShowPembayaranModal(false)}
-                                className="btn btn-secondary"
+                                className="btn-cancel"
                                 disabled={submitting}
                             >
                                 Batal
                             </button>
                             <button
                                 onClick={handleInputPembayaran}
-                                className="btn btn-primary"
+                                className="btn-confirm"
                                 disabled={submitting}
                             >
-                                {submitting ? '⏳ Menyimpan...' : '💾 Simpan Pembayaran'}
+                                {submitting ? 'Loading...' : 'Simpan'}
                             </button>
                         </div>
                     </div>
