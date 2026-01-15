@@ -15,6 +15,7 @@ router.put('/:id', pelangganController.updatePelanggan)
 router.delete('/:id', pelangganController.deletePelanggan)
 
 // Ukuran pelanggan
+router.get('/:id/ukuran', pelangganController.getUkuranByPelanggan) // NEW: Get all ukuran
 router.get('/:id/ukuran/:idJenis', pelangganController.getUkuranPelanggan)
 router.post('/:id/ukuran', pelangganController.saveUkuranPelanggan)
 

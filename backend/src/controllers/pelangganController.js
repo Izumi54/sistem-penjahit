@@ -285,6 +285,38 @@ export const deletePelanggan = async (req, res) => {
 }
 
 /**
+ * Get ukuran by pelanggan ID
+ * For modal display in pelanggan list
+ */
+export const getUkuranByPelanggan = async (req, res) => {
+    try {
+        const { id } = req.params
+
+        const ukuran = await prisma.ukuran.findMany({
+            where: { idPelanggan: id },
+            include: {
+                jenisPakaian: {
+                    select: {
+                        idJenis: true,
+                        namaJenis: true,
+                    },
+                },
+            },
+            orderBy: {
+                createdAt: 'desc',
+            },
+        })
+
+        res.json({ data: ukuran })
+    } catch (error) {
+        console.error('Get ukuran error:', error)
+        res.status(500).json({
+            error: 'Terjadi kesalahan saat mengambil data ukuran',
+        })
+    }
+}
+
+/**
  * Get ukuran pelanggan by jenis pakaian
  */
 export const getUkuranPelanggan = async (req, res) => {

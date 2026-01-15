@@ -137,6 +137,59 @@ function DetailPesanan() {
         return map[status] || 'status-badge-gray'
     }
 
+    // Generate full nota for WhatsApp
+    const generateNota = () => {
+        let nota = `*NOTA PESANAN*\n`
+        nota += `No Nota: *${pesanan.noNota}*\n`
+        nota += `Tanggal: ${formatDate(pesanan.tglMasuk)}\n\n`
+
+        nota += `*PELANGGAN*\n`
+        nota += `Nama: ${pesanan.pelanggan.namaLengkap}\n`
+        nota += `No WA: ${pesanan.pelanggan.noWa}\n`
+        if (pesanan.pelanggan.alamat) {
+            nota += `Alamat: ${pesanan.pelanggan.alamat}\n`
+        }
+        nota += `\n`
+
+        nota += `*DETAIL PESANAN*\n`
+        pesanan.detailPesanan.forEach((item, idx) => {
+            nota += `${idx + 1}. ${item.jenisPakaian.namaJenis} - ${item.namaItem}\n`
+            nota += `   Model: ${item.model || '-'}\n`
+            nota += `   Qty: ${item.qty} pcs\n`
+            nota += `   Harga: ${formatCurrency(item.harga)}\n`
+            nota += `   Subtotal: ${formatCurrency(item.subtotal)}\n`
+            nota += `\n`
+        })
+
+        nota += `*TOTAL BIAYA: ${formatCurrency(pesanan.totalBiaya)}*\n\n`
+
+        nota += `*PEMBAYARAN*\n`
+        nota += `Total Terbayar: ${formatCurrency(pembayaranSummary?.totalTerbayar || 0)}\n`
+        nota += `Sisa Bayar: ${formatCurrency(pesanan.sisaBayar)}\n`
+        if (pesanan.sisaBayar > 0) {
+            nota += `⚠️ _Mohon segera melunasi sisanya_\n`
+        } else {
+            nota += `✅ _Sudah Lunas_\n`
+        }
+        nota += `\n`
+
+        nota += `*STATUS PESANAN*\n`
+        nota += `Status: *${pesanan.statusPesanan}*\n`
+        nota += `Tanggal Janji Selesai: ${formatDate(pesanan.tglJanjiSelesai)}\n\n`
+
+        nota += `Terima kasih telah mempercayai jasa kami! 🙏\n`
+        nota += `_Jika ada pertanyaan silakan hubungi kami._`
+
+        return nota
+    }
+
+    const handleSendWhatsApp = () => {
+        const message = generateNota()
+        const encoded = encodeURIComponent(message)
+        const url = `https://wa.me/${pesanan.pelanggan.noWa}?text=${encoded}`
+        window.open(url, '_blank')
+    }
+
     if (loading) {
         return (
             <div className="detail-pesanan-wireframe">
@@ -196,9 +249,9 @@ function DetailPesanan() {
                             </button>
                         )}
                         <button
-                            onClick={() => window.open(`https://wa.me/${pesanan.pelanggan.noWa}?text=Halo ${pesanan.pelanggan.namaLengkap}, pesanan Anda ${noNota} status: ${pesanan.statusPesanan}`, '_blank')}
+                            onClick={handleSendWhatsApp}
                             className="btn-action btn-whatsapp"
-                            title="Kirim WhatsApp"
+                            title="Kirim Nota via WhatsApp"
                         >
                             📱 WhatsApp
                         </button>

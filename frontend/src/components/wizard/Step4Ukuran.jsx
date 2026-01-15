@@ -6,6 +6,7 @@ function Step4Ukuran() {
     const { items, pelanggan, ukuranData, setUkuranData, nextStep } = useWizardStore()
     const [templates, setTemplates] = useState({}) // { idJenis: { templateData } }
     const [loading, setLoading] = useState(false)
+    const [autoFilled, setAutoFilled] = useState(false)
 
     // Get unique jenis from items
     const uniqueJenis = Array.from(
@@ -14,6 +15,10 @@ function Step4Ukuran() {
 
     useEffect(() => {
         loadTemplates()
+        // Auto-populate ukuran if pelanggan lama
+        if (pelanggan && !pelanggan.isNew && pelanggan.idPelanggan) {
+            loadExistingUkuran()
+        }
     }, [])
 
     const loadTemplates = async () => {
@@ -35,6 +40,63 @@ function Step4Ukuran() {
             console.error('Load templates error:', err)
         } finally {
             setLoading(false)
+        }
+    }
+
+    const loadExistingUkuran = async () => {
+        try {
+            // For each jenis in items, try to fetch existing ukuran
+            const promises = uniqueJenis.map(async (item) => {
+                try {
+                    const response = await fetch(
+                        `/api/pelanggan/${pelanggan.idPelanggan}/ukuran/${item.idJenis}`,
+                        {
+                            headers: {
+                                'Authorization': `Bearer ${localStorage.getItem('token')}`
+                            }
+                        }
+                    )
+
+                    if (!response.ok) return null
+
+                    const data = await response.json()
+                    if (data.data && data.data.length > 0) {
+                        // Use most recent ukuran (first in array)
+                        const latestUkuran = data.data[0]
+                        return { idJenis: item.idJenis, ukuran: latestUkuran }
+                    }
+                    return null
+                } catch (err) {
+                    console.error(`Error loading ukuran for ${item.namaJenis}:`, err)
+                    return null
+                }
+            })
+
+            const results = await Promise.all(promises)
+
+            // Pre-fill ukuranData with existing values
+            results.forEach((result) => {
+                if (result) {
+                    const { idJenis, ukuran } = result
+                    const ukuranObj = {}
+
+                    // Map database fields to kodeUkuran format
+                    if (ukuran.lingkarDada) ukuranObj['LINGKAR_DADA'] = ukuran.lingkarDada
+                    if (ukuran.panjangBaju) ukuranObj['PANJANG_BAJU'] = ukuran.panjangBaju
+                    if (ukuran.lingkarPinggang) ukuranObj['LINGKAR_PINGGANG'] = ukuran.lingkarPinggang
+                    if (ukuran.panjangLengan) ukuranObj['PANJANG_LENGAN'] = ukuran.panjangLengan
+                    if (ukuran.lingkarLeher) ukuranObj['LINGKAR_LEHER'] = ukuran.lingkarLeher
+                    if (ukuran.lingkarPinggul) ukuranObj['LINGKAR_PINGGUL'] = ukuran.lingkarPinggul
+                    if (ukuran.panjangCelana) ukuranObj['PANJANG_CELANA'] = ukuran.panjangCelana
+                    if (ukuran.lingkarPaha) ukuranObj['LINGKAR_PAHA'] = ukuran.lingkarPaha
+                    if (ukuran.lingkarBetis) ukuranObj['LINGKAR_BETIS'] = ukuran.lingkarBetis
+
+                    setUkuranData(idJenis, ukuranObj)
+                    setAutoFilled(true) // Mark as auto-filled
+                }
+            })
+        } catch (err) {
+            console.error('Load existing ukuran error:', err)
         }
     }
 
@@ -94,6 +156,13 @@ function Step4Ukuran() {
     return (
         <div>
             <h2 className="step-title">Step 4: Input Ukuran Badan</h2>
+
+            {autoFilled && (
+                <div className="alert alert-info mb-md">
+                    ✅ Ukuran otomatis diisi dari data sebelumnya. Anda bisa mengubah jika ada perubahan.
+                </div>
+            )}
+
             <p className="text-muted mb-md">
                 Masukkan ukuran badan untuk setiap jenis pakaian (opsional, bisa dilewati)
             </p>

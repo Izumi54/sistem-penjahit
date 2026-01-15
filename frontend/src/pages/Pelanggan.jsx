@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { pelangganService } from '../services/pelangganService'
 import FormPelanggan from '../components/pelanggan/FormPelanggan'
+import ModalUkuran from '../components/pelanggan/ModalUkuran'
 import './Pelanggan.css'
 
 function Pelanggan() {
@@ -19,6 +20,8 @@ function Pelanggan() {
     // Modal state
     const [showModal, setShowModal] = useState(false)
     const [editData, setEditData] = useState(null)
+    const [showUkuranModal, setShowUkuranModal] = useState(false)
+    const [selectedPelanggan, setSelectedPelanggan] = useState(null)
 
     const ITEMS_PER_PAGE = 10
 
@@ -90,6 +93,11 @@ function Pelanggan() {
     const handleFormSuccess = () => {
         setShowModal(false)
         fetchPelanggan() // Refresh list
+    }
+
+    const handleViewUkuran = (item) => {
+        setSelectedPelanggan(item)
+        setShowUkuranModal(true)
     }
 
     // Format date
@@ -238,8 +246,8 @@ function Pelanggan() {
                                                 <td>
                                                     <span
                                                         className={`gender-badge ${item.jenisKelamin === 'L'
-                                                                ? 'gender-badge-male'
-                                                                : 'gender-badge-female'
+                                                            ? 'gender-badge-male'
+                                                            : 'gender-badge-female'
                                                             }`}
                                                     >
                                                         {item.jenisKelamin}
@@ -254,6 +262,13 @@ function Pelanggan() {
                                                 <td className="date-cell">{formatDate(item.createdAt)}</td>
                                                 <td>
                                                     <div className="action-buttons-wireframe">
+                                                        <button
+                                                            onClick={() => handleViewUkuran(item)}
+                                                            className="action-btn action-btn-view"
+                                                            title="Lihat Ukuran"
+                                                        >
+                                                            📏
+                                                        </button>
                                                         <button
                                                             onClick={() => handleEdit(item)}
                                                             className="action-btn action-btn-edit"
@@ -323,6 +338,14 @@ function Pelanggan() {
                     )}
                 </div>
             </div>
+
+            {/* Modal Ukuran */}
+            {showUkuranModal && selectedPelanggan && (
+                <ModalUkuran
+                    pelanggan={selectedPelanggan}
+                    onClose={() => setShowUkuranModal(false)}
+                />
+            )}
 
             {/* Modal Form */}
             {showModal && (

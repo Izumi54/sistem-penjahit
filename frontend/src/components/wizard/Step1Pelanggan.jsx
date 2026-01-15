@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import Select from 'react-select'
 import useWizardStore from '../../stores/wizardStore'
 import { pelangganService } from '../../services/pelangganService'
 
@@ -82,19 +83,45 @@ function Step1Pelanggan() {
             {/* Existing customer */}
             {mode === 'existing' && (
                 <div className="form-group">
-                    <label className="form-label required">Pilih Pelanggan</label>
-                    <select
-                        className="input"
-                        value={selectedId}
-                        onChange={(e) => setSelectedId(e.target.value)}
-                    >
-                        <option value="">-- Pilih Pelanggan --</option>
-                        {pelangganList.map((p) => (
-                            <option key={p.idPelanggan} value={p.idPelanggan}>
-                                {p.namaLengkap} ({p.idPelanggan}) - {p.noWa}
-                            </option>
-                        ))}
-                    </select>
+                    <label className="form-label required">Cari Pelanggan</label>
+                    <Select
+                        options={pelangganList.map(p => ({
+                            value: p.idPelanggan,
+                            label: `${p.namaLengkap} - ${p.noWa}`,
+                            data: p
+                        }))}
+                        value={pelangganList.find(p => p.idPelanggan === selectedId) ? {
+                            value: selectedId,
+                            label: `${pelangganList.find(p => p.idPelanggan === selectedId).namaLengkap} - ${pelangganList.find(p => p.idPelanggan === selectedId).noWa}`
+                        } : null}
+                        onChange={(option) => setSelectedId(option?.value || '')}
+                        placeholder="Ketik nama atau nomor WA untuk mencari..."
+                        isClearable
+                        isSearchable
+                        noOptionsMessage={() => 'Pelanggan tidak ditemukan'}
+                        loadingMessage={() => 'Loading...'}
+                        isLoading={loading}
+                        styles={{
+                            control: (base) => ({
+                                ...base,
+                                borderColor: '#D1D5DB',
+                                boxShadow: 'none',
+                                '&:hover': { borderColor: '#9CA3AF' },
+                                padding: '0.25rem'
+                            }),
+                            option: (base, state) => ({
+                                ...base,
+                                backgroundColor: state.isSelected ? '#4F46E5' : state.isFocused ? '#EEF2FF' : 'white',
+                                color: state.isSelected ? 'white' : '#1F2937',
+                                cursor: 'pointer'
+                            })
+                        }}
+                    />
+                    {selectedId && (
+                        <p className="text-sm text-muted mt-sm">
+                            ✅ Dipilih: {pelangganList.find(p => p.idPelanggan === selectedId)?.namaLengkap}
+                        </p>
+                    )}
                 </div>
             )}
 
