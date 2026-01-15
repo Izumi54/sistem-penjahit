@@ -75,6 +75,83 @@ function Step3Detail() {
                         </div>
                     </div>
 
+                                        {/* Tambahan Bahan - PROPER FORM */}
+                    <div className="form-group" style={{marginTop: '1.5rem', padding: '1rem', background: '#f0f9ff', borderRadius: '8px', border: '1px solid #bfdbfe'}}>
+                        <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem'}}>
+                            <label className="form-label" style={{margin: 0}}>🧵 Tambahan Bahan</label>
+                            <button
+                                type="button"
+                                className="btn btn-sm"
+                                onClick={() => {
+                                    const current = item.tambahanBahan || []
+                                    handleChange(item.id, 'tambahanBahan', [...current, {nama: '', qty: 1, harga: 0}])
+                                }}
+                                style={{fontSize: '0.875rem', padding: '0.375rem 0.75rem'}}
+                            >
+                                ➕ Tambah Bahan
+                            </button>
+                        </div>
+                        
+                        {(item.tambahanBahan || []).map((bahan, bahanIdx) => (
+                            <div key={bahanIdx} style={{display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 40px', gap: '0.5rem', marginBottom: '0.5rem', padding: '0.75rem', background: 'white', borderRadius: '6px'}}>
+                                <input
+                                    type="text"
+                                    className="input"
+                                    placeholder="Nama bahan (Kancing, Resleting...)"
+                                    value={bahan.nama}
+                                    onChange={(e) => {
+                                        const updated = [...(item.tambahanBahan || [])]
+                                        updated[bahanIdx].nama = e.target.value
+                                        handleChange(item.id, 'tambahanBahan', updated)
+                                    }}
+                                    style={{fontSize: '0.875rem', padding: '0.5rem'}}
+                                />
+                                <input
+                                    type="number"
+                                    className="input"
+                                    placeholder="Qty"
+                                    value={bahan.qty}
+                                    onChange={(e) => {
+                                        const updated = [...(item.tambahanBahan || [])]
+                                        updated[bahanIdx].qty = parseInt(e.target.value) || 1
+                                        handleChange(item.id, 'tambahanBahan', updated)
+                                    }}
+                                    min="1"
+                                    style={{fontSize: '0.875rem', padding: '0.5rem'}}
+                                />
+                                <input
+                                    type="number"
+                                    className="input"
+                                    placeholder="Harga"
+                                    value={bahan.harga}
+                                    onChange={(e) => {
+                                        const updated = [...(item.tambahanBahan || [])]
+                                        updated[bahanIdx].harga = parseInt(e.target.value) || 0
+                                        handleChange(item.id, 'tambahanBahan', updated)
+                                    }}
+                                    min="0"
+                                    style={{fontSize: '0.875rem', padding: '0.5rem'}}
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        const updated = (item.tambahanBahan || []).filter((_, i) => i !== bahanIdx)
+                                        handleChange(item.id, 'tambahanBahan', updated)
+                                    }}
+                                    style={{background: '#fee2e2', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '1rem'}}
+                                >
+                                    🗑️
+                                </button>
+                            </div>
+                        ))}
+                        
+                        {(item.tambahanBahan || []).length === 0 && (
+                            <p style={{fontSize: '0.875rem', color: '#9ca3af', textAlign: 'center', margin: '0.5rem 0'}}>
+                                Klik "➕ Tambah Bahan" untuk menambahkan kancing, resleting, dll
+                            </p>
+                        )}
+                    </div>
+
                     <div className="form-group">
                         <label className="form-label">Model Spesifik (Opsional)</label>
                         <textarea
@@ -99,12 +176,31 @@ function Step3Detail() {
 
                     {item.hargaSatuan > 0 && (
                         <div className="subtotal-display">
-                            <strong>Subtotal:</strong> Rp {((item.hargaSatuan || 0) * (item.jumlahPcs || 1)).toLocaleString('id-ID')}
+                            {(() => {
+                                const subtotalItem = (item.hargaSatuan || 0) * (item.jumlahPcs || 1)
+                                const subtotalBahan = (item.tambahanBahan || []).reduce((sum, b) => sum + (b.qty * b.harga), 0)
+                                const total = subtotalItem + subtotalBahan
+                                
+                                return (
+                                    <>
+                                        <div style={{marginBottom: '0.5rem'}}>
+                                            <strong>Subtotal Item:</strong> Rp {subtotalItem.toLocaleString('id-ID')}
+                                        </div>
+                                        {subtotalBahan > 0 && (
+                                            <div style={{marginBottom: '0.5rem', color: '#059669'}}>
+                                                <strong>+ Tambahan Bahan:</strong> Rp {subtotalBahan.toLocaleString('id-ID')}
+                                            </div>
+                                        )}
+                                        <div style={{paddingTop: '0.5rem', borderTop: '2px solid #e5e7eb', fontSize: '1.125rem'}}>
+                                            <strong>TOTAL:</strong> Rp {total.toLocaleString('id-ID')}
+                                        </div>
+                                    </>
+                                )
+                            })()}
                         </div>
                     )}
                 </div>
             ))}
-
             <div className="mt-lg">
                 <button onClick={handleNext} className="btn btn-primary btn-block">
                     Lanjut ke Step 4 (Konfirmasi) →
