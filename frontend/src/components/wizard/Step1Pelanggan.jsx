@@ -17,6 +17,7 @@ function Step1Pelanggan() {
     })
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState(null)
+    const [duplicateWarning, setDuplicateWarning] = useState(null)
 
     useEffect(() => {
         if (mode === 'existing') {
@@ -49,7 +50,10 @@ function Step1Pelanggan() {
                 alert('Nama dan nomor WA harus diisi')
                 return
             }
+            // Clear previous warning
+            setDuplicateWarning(null)
             setPelanggan(formData, true)
+            
         }
         nextStep()
     }
@@ -122,6 +126,26 @@ function Step1Pelanggan() {
                             ✅ Dipilih: {pelangganList.find(p => p.idPelanggan === selectedId)?.namaLengkap}
                         </p>
                     )}
+                </div>
+            )}
+    
+            {duplicateWarning && (
+                <div className="alert alert-warning" style={{marginBottom: '1rem'}}>
+                    <p style={{margin: 0, fontWeight: 600}}>⚠️ {duplicateWarning.error}</p>
+                    <p style={{margin: '0.5rem 0', fontSize: '0.875rem'}}>
+                        Pelanggan: {duplicateWarning.existingNama} (ID: {duplicateWarning.existingId})
+                    </p>
+                    <button 
+                        onClick={() => {
+                            setMode('existing')
+                            setSelectedId(duplicateWarning.existingId)
+                            setDuplicateWarning(null)
+                        }}
+                        className="btn btn-sm"
+                        style={{fontSize: '0.875rem', padding: '0.375rem 1rem', marginTop: '0.5rem'}}
+                    >
+                        ✅ Gunakan Pelanggan Ini
+                    </button>
                 </div>
             )}
 

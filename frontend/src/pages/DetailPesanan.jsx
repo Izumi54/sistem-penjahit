@@ -12,6 +12,8 @@ function DetailPesanan() {
     const [pesanan, setPesanan] = useState(null)
     const [pembayaranList, setPembayaranList] = useState([])
     const [pembayaranSummary, setPembayaranSummary] = useState(null)
+    const [editingItem, setEditingItem] = useState(null)
+    const [editedHarga, setEditedHarga] = useState(0)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
 
@@ -135,6 +137,20 @@ function DetailPesanan() {
             BATAL: 'status-badge-red',
         }
         return map[status] || 'status-badge-gray'
+    }
+
+    const handleEditHarga = (item) => {
+        setEditingItem(item)
+        setEditedHarga(item.harga)
+    }
+
+    const handleSaveHarga = async () => {
+        try {
+            await pesananService.updateHargaDetail(noNota, editingItem.idDetail, editedHarga)
+            fetchData()
+        } catch (err) {
+            alert(err.response?.data?.error || 'Gagal update harga')
+        }
     }
 
     // Generate full nota for WhatsApp
@@ -327,6 +343,7 @@ function DetailPesanan() {
                                         <th>Qty</th>
                                         <th>Harga</th>
                                         <th>Subtotal</th>
+                                        <th>Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -337,8 +354,30 @@ function DetailPesanan() {
                                             <td>{item.namaItem}</td>
                                             <td>{item.model || '-'}</td>
                                             <td>{item.qty}</td>
-                                            <td>{formatCurrency(item.harga)}</td>
+                                            <td>
+                                                {editingItem === item.idDetail ? (
+                                                    <input
+                                                        type="number"
+                                                        value={editedHarga}
+                                                        onChange={(e) => setEditedHarga(e.target.value)}
+                                                        className="input"
+                                                        style={{ width: '120px', padding: '0.25rem' }}
+                                                    />
+                                                ) : (
+                                                    formatCurrency(item.harga)
+                                                )}
+                                            </td>
                                             <td className="subtotal-cell">{formatCurrency(item.subtotal)}</td>
+                                            <td>
+                                                {editingItem === item.idDetail ? (
+                                                    <>
+                                                        <button onClick={() => handleSaveHarga(item.idDetail)} className="btn btn-sm" style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem', marginRight: '0.25rem' }}>💾</button>
+                                                        <button onClick={() => setEditingItem(null)} className="btn btn-sm" style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem' }}>❌</button>
+                                                    </>
+                                                ) : (
+                                                    <button onClick={() => { setEditingItem(item.idDetail); setEditedHarga(item.harga) }} className="btn btn-sm" style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem' }}>✏️</button>
+                                                )}
+                                            </td>
                                         </tr>
                                     ))}
                                 </tbody>

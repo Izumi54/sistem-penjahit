@@ -433,3 +433,53 @@ export const getJadwalPesanan = async (req, res) => {
         res.status(500).json({ error: 'Terjadi kesalahan saat mengambil jadwal' })
     }
 }
+
+
+/**
+ * Update harga detail pesanan
+ */
+export const updateHargaDetail = async (req, res) => {
+    try {
+        const { noNota, idDetail } = req.params
+        const { harga } = req.body
+
+        if (!harga || harga < 0) {
+            return res.status(400).json({ error: 'Harga tidak valid' })
+        }
+
+        const detail = await prisma.detailPesanan.findUnique({
+            where: { idDetail }
+        })
+
+        if (!detail) {
+            return res.status(404).json({ error: 'Detail pesanan tidak ditemukan' })
+        }
+
+        const newSubtotal = detail.qty * harga
+        await prisma.detailPesanan.update({
+            where: { idDetail },
+            data: { harga: parseInt(harga), subtotal: newSubtotal }
+        })
+
+        const allDetails = await prisma.detailPesanan.findMany({
+            where: { noNota }
+        })
+
+        const newTotalBiaya = allDetails.reduce((sum, item) => {
+            return sum + (item.idDetail === idDetail ? newSubtotal : item.subtotal)
+        }, 0)
+
+        await prisma.pesanan.update({
+            where: { noNota },
+            data: { totalBiaya: newTotalBiaya }
+        })
+
+        res.json({
+            message: 'Harga berhasil diupdate',
+            data: { harga, subtotal: newSubtotal, newTotalBiaya }
+        })
+    } catch (error) {
+        console.error('Update harga error:', error)
+        res.status(500).json({ error: 'Terjadi kesalahan saat update harga' })
+    }
+}

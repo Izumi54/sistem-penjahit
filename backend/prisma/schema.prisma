@@ -188,13 +188,31 @@ model DetailPesanan {
   pesanan       Pesanan         @relation(fields: [noNota], references: [noNota], onDelete: Cascade)
   jenisPakaian  JenisPakaian    @relation(fields: [idJenis], references: [idJenis])
   fotoReferensi FotoReferensi[]
+    tambahanBahan TambahanBahan[]
 
   @@map("detail_pesanan")
   @@index([noNota])
 }
 
 // ===================================
-// 9. FOTO REFERENSI (Google Drive)
+// 9. TAMBAHAN BAHAN
+// ===================================
+model TambahanBahan {
+    idTambahan  String   @id @default(cuid()) @map("id_tambahan")
+    idDetail    Int      @map("id_detail")
+    namaBahan   String   @map("nama_bahan") @db.VarChar(100)
+    qty         Int      @default(1)
+    harga       Int
+    subtotal    Int
+    createdAt   DateTime @default(now()) @map("created_at")
+    detailPesanan DetailPesanan @relation(fields: [idDetail], references: [idDetail], onDelete: Cascade)
+    
+    @@map("tambahan_bahan")
+    @@index([idDetail])
+}
+
+// ===================================
+// 10. FOTO REFERENSI (Google Drive)
 // ===================================
 model FotoReferensi {
   idFoto     Int      @id @default(autoincrement()) @map("id_foto")

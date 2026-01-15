@@ -157,6 +157,27 @@ export const createPelanggan = async (req, res) => {
             })
         }
 
+        // Check for duplicate pelanggan
+        const existing = await prisma.pelanggan.findFirst({
+            where: {
+                OR: [
+                    { namaLengkap: { equals: namaLengkap, mode: 'insensitive' } },
+                    { noWa: formatPhoneNumber(noWa) }
+                ]
+            }
+        })
+
+        if (existing) {
+            const duplicateField = existing.namaLengkap.toLowerCase() === namaLengkap.toLowerCase()
+                ? 'nama'
+                : 'nomor WA'
+            return res.status(409).json({
+                error: `Pelanggan dengan ${duplicateField} ini sudah terdaftar`,
+                existingId: existing.idPelanggan,
+                existingNama: existing.namaLengkap
+            })
+        }
+
         // Generate kode pelanggan
         const lastPelanggan = await prisma.pelanggan.findFirst({
             orderBy: { idPelanggan: 'desc' },

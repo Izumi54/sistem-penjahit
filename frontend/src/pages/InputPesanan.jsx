@@ -66,7 +66,13 @@ function InputPesanan() {
             reset()
             navigate(`/dashboard`)
         } catch (err) {
-            setError(err.response?.data?.error || 'Gagal membuat pesanan')
+        // Handle duplicate pelanggan error
+            if (err.response?.status === 409) {
+                setCurrentStep(1)
+                setError(`Duplikat Pelanggan: ${err.response.data.error}. Silakan gunakan pelanggan yang sudah ada atau ubah nama/no WA.`)
+            } else {
+                setError(err.response?.data?.error || 'Gagal membuat pesanan')
+            }
         } finally {
             setLoading(false)
         }

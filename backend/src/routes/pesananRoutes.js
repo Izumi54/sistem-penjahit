@@ -24,4 +24,7 @@ router.get('/jadwal', pesananController.getJadwalPesanan)
 // Pembayaran (nested routes)
 router.use('/:noNota/pembayaran', pembayaranRoutes)
 
+// Update harga detail pesanan
+router.patch('/:noNota/detail/:idDetail/harga', pesananController.updateHargaDetail)
+
 export default router
