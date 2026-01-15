@@ -395,3 +395,41 @@ export const getHistoryStatus = async (req, res) => {
         })
     }
 }
+
+/**
+ * Get jadwal pesanan for calendar view
+ */
+export const getJadwalPesanan = async (req, res) => {
+    try {
+        const { month, year, status } = req.query
+        let where = {}
+
+        if (month && year) {
+            const startDate = new Date(parseInt(year), parseInt(month) - 1, 1)
+            const endDate = new Date(parseInt(year), parseInt(month), 0, 23, 59, 59)
+            where.tglJanjiSelesai = { gte: startDate, lte: endDate }
+        }
+
+        if (status) {
+            where.statusPesanan = { in: status.split(',') }
+        } else {
+            where.statusPesanan = { in: ['ANTRI', 'POTONG', 'JAHIT'] }
+        }
+
+        const pesanan = await prisma.pesanan.findMany({
+            where,
+            select: { tglJanjiSelesai: true },
+        })
+
+        const jadwalMap = {}
+        pesanan.forEach((p) => {
+            const dateKey = p.tglJanjiSelesai.toISOString().split('T')[0]
+            jadwalMap[dateKey] = (jadwalMap[dateKey] || 0) + 1
+        })
+
+        res.json({ data: jadwalMap })
+    } catch (error) {
+        console.error('Get jadwal error:', error)
+        res.status(500).json({ error: 'Terjadi kesalahan saat mengambil jadwal' })
+    }
+}

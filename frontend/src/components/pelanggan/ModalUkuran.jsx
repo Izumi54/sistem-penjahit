@@ -1,9 +1,7 @@
 import { useState, useEffect } from 'react'
 import './ModalUkuran.css'
 
-function ModalU
-
-kuran({ pelanggan, onClose }) {
+function ModalUkuran({ pelanggan, onClose }) {
     const [ukuran, setUkuran] = useState([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
@@ -59,7 +57,7 @@ kuran({ pelanggan, onClose }) {
                         <div className="ukuran-list">
                             {ukuran.map((item) => (
                                 <div key={item.idUkuran} className="ukuran-card">
-                                    <div className="uk uran-header">
+                                    <div className="ukuran-header">
                                         <span className="jenis-badge">{item.jenisPakaian.namaJenis}</span>
                                         <span className="ukuran-date">
                                             {new Date(item.createdAt).toLocaleDateString('id-ID')}
@@ -117,7 +115,7 @@ kuran({ pelanggan, onClose }) {
                                         {item.lingkarBetis && (
                                             <div className="ukuran-item">
                                                 <span className="ukuran-label">Lingkar Betis:</span>
-                                                <span className="ukuran-value">{item.lingkar Betis} cm</span>
+                                                <span className="ukuran-value">{item.lingkarBetis} cm</span>
                                             </div>
                                         )}
                                     </div>

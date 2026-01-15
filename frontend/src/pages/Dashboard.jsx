@@ -1,4 +1,8 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import Calendar from 'react-calendar'
+import 'react-calendar/dist/Calendar.css'
+import './DashboardCalendar.css'
 import { analyticsService } from '../services/analyticsService'
 import StatCard from '../components/dashboard/StatCard'
 import DonutChart from '../components/dashboard/DonutChart'
@@ -6,14 +10,18 @@ import LineChart from '../components/dashboard/LineChart'
 import './Dashboard.css'
 
 function Dashboard() {
+    const navigate = useNavigate()
     const [overview, setOverview] = useState(null)
     const [statusData, setStatusData] = useState(null)
     const [revenueData, setRevenueData] = useState(null)
+    const [jadwalData, setJadwalData] = useState({})
+    const [pesananList, setPesananList] = useState([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
 
     useEffect(() => {
         fetchAnalytics()
+        fetchJadwal(new Date())
     }, [])
 
     const fetchAnalytics = async () => {
@@ -43,6 +51,68 @@ function Dashboard() {
             currency: 'IDR',
             minimumFractionDigits: 0,
         }).format(value)
+    }
+
+    const fetchJadwal = async (date) => {
+        try {
+            const month = date.getMonth() + 1
+            const year = date.getFullYear()
+            const response = await fetch(
+                `/api/pesanan/jadwal?month=${month}&year=${year}`,
+                {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                }
+            )
+            const data = await response.json()
+            setJadwalData(data.data || {})
+
+            // Fetch actual pesanan for events
+            const pesananResponse = await fetch(
+                `/api/pesanan?page=1&limit=100&status=ANTRI,POTONG,JAHIT`,
+                {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                }
+            )
+            const pesananData = await pesananResponse.json()
+            setPesananList(pesananData.data || [])
+        } catch (err) {
+            console.error('Fetch jadwal error:', err)
+        }
+    }
+
+    const getTileContent = ({ date }) => {
+        const dateKey = date.toISOString().split('T')[0]
+        const count = jadwalData[dateKey] || 0
+        if (count > 0) {
+            return <div className="tile-badge">{count}</div>
+        }
+        return null
+    }
+
+    const getTileClass = ({ date }) => {
+        const dateKey = date.toISOString().split('T')[0]
+        const count = jadwalData[dateKey] || 0
+        if (count === 0) return ''
+        if (count <= 3) return 'has-events-low'
+        if (count <= 7) return 'has-events-medium'
+        return 'has-events-high'
+    }
+
+    const handleDateClick = (date) => {
+        const dateKey = date.toISOString().split('T')[0]
+        const pesananOnDate = pesananList.filter(p => {
+            const tglSelesai = new Date(p.tglJanjiSelesai).toISOString().split('T')[0]
+            return tglSelesai === dateKey
+        })
+
+        if (pesananOnDate.length > 0) {
+            // Navigate to first pesanan detail
+            navigate(`/pesanan/${pesananOnDate[0].noNota}`)
+        }
     }
 
     return (
@@ -116,6 +186,28 @@ function Dashboard() {
                                 <DonutChart data={statusData} />
                             )}
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Jadwal Calendar - Full Width */}
+            <div className="calendar-section">
+                <h3 className="section-title">📅 Jadwal Jahitan</h3>
+                <div className="dashboard-calendar-container">
+                    <Calendar
+                        value={new Date()}
+                        tileContent={getTileContent}
+                        tileClassName={getTileClass}
+                        onClickDay={handleDateClick}
+                        onActiveStartDateChange={({ activeStartDate }) => fetchJadwal(activeStartDate)}
+                    />
+                    <div className="calendar-info">
+                        <p className="info-text">
+                            <strong>Klik pada tanggal</strong> untuk melihat detail pesanan.
+                        </p>
+                        <p className="info-text">
+                            Badge menunjukkan jumlah pesanan yang dijadwalkan selesai pada tanggal tersebut.
+                        </p>
                     </div>
                 </div>
             </div>

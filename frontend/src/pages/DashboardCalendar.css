@@ -1,0 +1,128 @@
+/* Dashboard Calendar Section - Compact Design */
+.calendar-section {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: white;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+}
+
+.calendar-section .section-title {
+    font-size: var(--text-lg);
+    font-weight: 700;
+    color: var(--color-gray-900);
+    margin-bottom: 1rem;
+}
+
+.dashboard-calendar-container {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1.5rem;
+    align-items: start;
+    max-height: 400px;
+}
+
+.dashboard-calendar-container .react-calendar {
+    width: 100%;
+    border: 2px solid var(--color-gray-200);
+    border-radius: var(--radius-md);
+    padding: 0.75rem;
+    font-size: 0.875rem;
+}
+
+.react-calendar__tile {
+    position: relative;
+    padding: 0.5rem 0.25rem;
+    height: 45px;
+}
+
+.tile-badge {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background: var(--gradient-primary);
+    color: white;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 2px 5px;
+    border-radius: 8px;
+    min-width: 16px;
+    text-align: center;
+    line-height: 1;
+}
+
+.react-calendar__tile.has-events-low {
+    background: #FEF3C7 !important;
+}
+
+.react-calendar__tile.has-events-medium {
+    background: #FED7AA !important;
+}
+
+.react-calendar__tile.has-events-high {
+    background: #FEE2E2 !important;
+    font-weight: 600;
+}
+
+.react-calendar__tile:enabled:hover {
+    background: rgba(79, 70, 229, 0.1);
+    cursor: pointer;
+    transform: scale(1.02);
+}
+
+.react-calendar__navigation {
+    margin-bottom: 0.5rem;
+}
+
+.calendar-info {
+    padding: 1rem;
+    background: linear-gradient(135deg, #F9FAFB 0%, #F3F4F6 100%);
+    border-radius: var(--radius-md);
+    border-left: 4px solid var(--color-primary);
+    height: fit-content;
+}
+
+.calendar-info .info-text {
+    font-size: 0.8125rem;
+    color: var(--color-gray-700);
+    margin-bottom: 0.5rem;
+    line-height: 1.5;
+}
+
+.calendar-info .info-text:last-child {
+    margin-bottom: 0;
+}
+
+.calendar-info strong {
+    color: var(--color-primary);
+}
+
+/* Responsive Dashboard Calendar */
+@media (max-width: 1024px) {
+    .dashboard-calendar-container {
+        grid-template-columns: 1fr;
+        max-height: none;
+    }
+
+    .calendar-info {
+        order: -1;
+    }
+}
+
+@media (max-width: 768px) {
+    .calendar-section {
+        padding: 1rem;
+    }
+
+    .react-calendar__tile {
+        height: 40px;
+        padding: 0.375rem 0.125rem;
+        font-size: 0.75rem;
+    }
+
+    .tile-badge {
+        font-size: 0.55rem;
+        padding: 1px 3px;
+        min-width: 12px;
+    }
+}

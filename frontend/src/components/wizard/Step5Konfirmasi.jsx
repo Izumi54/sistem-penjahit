@@ -1,3 +1,7 @@
+import { useState, useEffect } from 'react'
+import Calendar from 'react-calendar'
+import 'react-calendar/dist/Calendar.css'
+import './Step5Konfirmasi.css'
 import useWizardStore from '../../stores/wizardStore'
 
 function Step5Konfirmasi() {
@@ -18,6 +22,63 @@ function Step5Konfirmasi() {
 
     const totalBiaya = getTotalBiaya()
     const sisaBayar = getSisaBayar()
+
+    // Calendar state
+    const [jadwalData, setJadwalData] = useState({})
+    const [selectedDate, setSelectedDate] = useState(tglJanjiSelesai ? new Date(tglJanjiSelesai) : null)
+    const [showCalendar, setShowCalendar] = useState(false)
+
+    // Fetch jadwal when month changes
+    useEffect(() => {
+        if (showCalendar) {
+            fetchJadwal(new Date())
+        }
+    }, [showCalendar])
+
+    const fetchJadwal = async (date) => {
+        try {
+            const month = date.getMonth() + 1
+            const year = date.getFullYear()
+            const response = await fetch(
+                `/api/pesanan/jadwal?month=${month}&year=${year}`,
+                {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    }
+                }
+            )
+            const data = await response.json()
+            setJadwalData(data.data || {})
+        } catch (err) {
+            console.error('Fetch jadwal error:', err)
+        }
+    }
+
+    const getDateClass = (date) => {
+        const dateKey = date.toISOString().split('T')[0]
+        const count = jadwalData[dateKey] || 0
+        if (count === 0) return 'available'
+        if (count <= 3) return 'busy-low'
+        if (count <= 7) return 'busy-medium'
+        return 'busy-high'
+    }
+
+    const handleDateSelect = (date) => {
+        const dateString = date.toISOString().split('T')[0]
+        setSelectedDate(date)
+        setTanggal(tglMasuk, dateString)
+        setShowCalendar(false)
+    }
+
+    const getWarningMessage = () => {
+        if (!selectedDate) return null
+        const dateKey = selectedDate.toISOString().split('T')[0]
+        const count = jadwalData[dateKey] || 0
+        if (count === 0) return { type: 'success', msg: '✅ Jadwal tersedia!' }
+        if (count <= 3) return { type: 'info', msg: `ℹ️ ${count} pesanan dijadwalkan` }
+        if (count <= 7) return { type: 'warning', msg: `⚠️ ${count} pesanan - Jadwal cukup padat` }
+        return { type: 'danger', msg: `🔴 ${count} pesanan - Jadwal sangat padat!` }
+    }
 
     return (
         <div>
@@ -91,13 +152,47 @@ function Step5Konfirmasi() {
 
                 <div className="form-group">
                     <label className="form-label required">Tanggal Janji Selesai</label>
-                    <input
-                        type="date"
-                        className="input"
-                        value={tglJanjiSelesai}
-                        onChange={(e) => setTanggal(tglMasuk, e.target.value)}
-                        min={tglMasuk}
-                    />
+                    <div className="calendar-input-wrapper">
+                        <input
+                            type="text"
+                            className="input"
+                            value={tglJanjiSelesai || ''}
+                            onClick={() => setShowCalendar(!showCalendar)}
+                            readOnly
+                            placeholder="Pilih tanggal dari kalender"
+                        />
+                        <button
+                            type="button"
+                            className="btn-calendar-toggle"
+                            onClick={() => setShowCalendar(!showCalendar)}
+                        >
+                            📅
+                        </button>
+                    </div>
+
+                    {showCalendar && (
+                        <div className="calendar-container">
+                            <Calendar
+                                onChange={handleDateSelect}
+                                value={selectedDate}
+                                minDate={tglMasuk ? new Date(tglMasuk) : new Date()}
+                                tileClassName={({ date }) => getDateClass(date)}
+                                onActiveStartDateChange={({ activeStartDate }) => fetchJadwal(activeStartDate)}
+                            />
+                            <div className="calendar-legend">
+                                <span className="legend-item"><span className="dot available"></span> Tersedia</span>
+                                <span className="legend-item"><span className="dot busy-low"></span> 1-3 pesanan</span>
+                                <span className="legend-item"><span className="dot busy-medium"></span> 4-7 pesanan</span>
+                                <span className="legend-item"><span className="dot busy-high"></span> 8+ pesanan</span>
+                            </div>
+                        </div>
+                    )}
+
+                    {selectedDate && getWarningMessage() && (
+                        <div className={`alert alert-${getWarningMessage().type} mt-sm`}>
+                            {getWarningMessage().msg}
+                        </div>
+                    )}
                 </div>
             </div>
 

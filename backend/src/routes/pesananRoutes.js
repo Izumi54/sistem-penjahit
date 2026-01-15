@@ -18,6 +18,9 @@ router.delete('/:noNota', pesananController.deletePesanan)
 // History
 router.get('/:noNota/history', pesananController.getHistoryStatus)
 
+// Jadwal (calendar data)
+router.get('/jadwal', pesananController.getJadwalPesanan)
+
 // Pembayaran (nested routes)
 router.use('/:noNota/pembayaran', pembayaranRoutes)
 
