@@ -170,6 +170,7 @@ export const createPesanan = async (req, res) => {
         } = req.body
 
         const idUser = req.user.idUser // From auth middleware
+        console.log('DEBUG: creating pesanan with idUser:', idUser, 'userInfo:', req.user)
 
         // Validation
         if (!idPelanggan || !tglJanjiSelesai || !detailPesanan || detailPesanan.length === 0) {
