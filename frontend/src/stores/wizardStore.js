@@ -174,6 +174,7 @@ const useWizardStore = create((set, get) => ({
                 jumlahPcs: item.jumlahPcs || 1,
                 hargaSatuan: parseInt(item.hargaSatuan) || 0,
                 catatanPenjahit: item.catatanPenjahit || '',
+                tambahanBahan: item.tambahanBahan || [], // Include tambahan bahan
             })),
         }
     },

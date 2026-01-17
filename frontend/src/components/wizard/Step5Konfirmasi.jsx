@@ -116,29 +116,59 @@ function Step5Konfirmasi() {
                             </thead>
                             <tbody>
                                 {items.map((item, index) => {
-                                    const subtotal = (item.hargaSatuan || 0) * (item.jumlahPcs || 1)
+                                    const subtotalItem = (item.hargaSatuan || 0) * (item.jumlahPcs || 1)
+                                    const subtotalBahan = (item.tambahanBahan || []).reduce((sum, b) => sum + (b.qty * b.harga), 0)
+                                    const totalItem = subtotalItem + subtotalBahan
+                                    
                                     return (
-                                        <tr key={index}>
-                                            <td>
-                                                {item.namaItem}
-                                                {item.isGrouped && (
-                                                    <span style={{
-                                                        marginLeft: '0.5rem',
-                                                        fontSize: '0.75rem',
-                                                        padding: '0.125rem 0.5rem',
-                                                        background: '#fbbf24',
-                                                        color: '#78350f',
-                                                        borderRadius: '4px',
-                                                        fontWeight: '600'
-                                                    }}>
-                                                        🔢 Ukuran Berbeda
-                                                    </span>
-                                                )}
-                                            </td>
-                                            <td>{item.jumlahPcs || 1}</td>
-                                            <td> Rp {(item.hargaSatuan || 0).toLocaleString('id-ID')}</td>
-                                            <td>Rp {subtotal.toLocaleString('id-ID')}</td>
-                                        </tr>
+                                        <>
+                                            <tr key={index}>
+                                                <td>
+                                                    {item.namaItem}
+                                                    {item.isGrouped && (
+                                                        <span style={{
+                                                            marginLeft: '0.5rem',
+                                                            fontSize: '0.75rem',
+                                                            padding: '0.125rem 0.5rem',
+                                                            background: '#fbbf24',
+                                                            color: '#78350f',
+                                                            borderRadius: '4px',
+                                                            fontWeight: '600'
+                                                        }}>
+                                                            🔢 Ukuran Berbeda
+                                                        </span>
+                                                    )}
+                                                </td>
+                                                <td>{item.jumlahPcs || 1}</td>
+                                                <td>Rp {(item.hargaSatuan || 0).toLocaleString('id-ID')}</td>
+                                                <td>Rp {subtotalItem.toLocaleString('id-ID')}</td>
+                                            </tr>
+                                            
+                                            {/* Show tambahan bahan as sub-rows */}
+                                            {(item.tambahanBahan || []).length > 0 && (
+                                                <>
+                                                    {item.tambahanBahan.map((bahan, bahanIdx) => (
+                                                        <tr key={`${index}-bahan-${bahanIdx}`} style={{
+                                                            background: '#f0f9ff',
+                                                            fontSize: '0.9rem'
+                                                        }}>
+                                                            <td style={{paddingLeft: '2rem', color: '#0369a1'}}>
+                                                                ↳ {bahan.nama}
+                                                            </td>
+                                                            <td style={{color: '#0369a1'}}>{bahan.qty}</td>
+                                                            <td style={{color: '#0369a1'}}>Rp {(bahan.harga || 0).toLocaleString('id-ID')}</td>
+                                                            <td style={{color: '#0369a1'}}>Rp {((bahan.qty * bahan.harga) || 0).toLocaleString('id-ID')}</td>
+                                                        </tr>
+                                                    ))}
+                                                    <tr style={{background: '#dbeafe', fontWeight: '600'}}>
+                                                        <td colSpan="3" style={{textAlign: 'right', paddingRight: '1rem'}}>
+                                                            Total {item.namaItem}:
+                                                        </td>
+                                                        <td>Rp {totalItem.toLocaleString('id-ID')}</td>
+                                                    </tr>
+                                                </>
+                                            )}
+                                        </>
                                     )
                                 })}
                             </tbody>

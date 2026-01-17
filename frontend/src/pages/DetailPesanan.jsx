@@ -347,39 +347,75 @@ function DetailPesanan() {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {pesanan.detailPesanan.map((item, index) => (
-                                        <tr key={item.idDetail}>
-                                            <td>{index + 1}</td>
-                                            <td>{item.jenisPakaian.namaJenis}</td>
-                                            <td>{item.namaItem}</td>
-                                            <td>{item.model || '-'}</td>
-                                            <td>{item.qty}</td>
-                                            <td>
-                                                {editingItem === item.idDetail ? (
-                                                    <input
-                                                        type="number"
-                                                        value={editedHarga}
-                                                        onChange={(e) => setEditedHarga(e.target.value)}
-                                                        className="input"
-                                                        style={{ width: '120px', padding: '0.25rem' }}
-                                                    />
-                                                ) : (
-                                                    formatCurrency(item.harga)
-                                                )}
-                                            </td>
-                                            <td className="subtotal-cell">{formatCurrency(item.subtotal)}</td>
-                                            <td>
-                                                {editingItem === item.idDetail ? (
+                                    {pesanan.detailPesanan.map((item, index) => {
+                                        const subtotalBahan = (item.tambahanBahan || []).reduce((sum, b) => sum + (b.qty * b.harga), 0)
+                                        const totalItem = item.subtotal + subtotalBahan
+                                        
+                                        return (
+                                            <>
+                                                <tr key={item.idDetail}>
+                                                    <td>{index + 1}</td>
+                                                    <td>{item.jenisPakaian.namaJenis}</td>
+                                                    <td>{item.namaItem}</td>
+                                                    <td>{item.modelSpesifik || '-'}</td>
+                                                    <td>{item.jumlahPcs}</td>
+                                                    <td>
+                                                        {editingItem === item.idDetail ? (
+                                                            <input
+                                                                type="number"
+                                                                value={editedHarga}
+                                                                onChange={(e) => setEditedHarga(e.target.value)}
+                                                                className="input"
+                                                                style={{ width: '120px', padding: '0.25rem' }}
+                                                            />
+                                                        ) : (
+                                                            formatCurrency(item.hargaSatuan)
+                                                        )}
+                                                    </td>
+                                                    <td className="subtotal-cell">{formatCurrency(item.subtotal)}</td>
+                                                    <td>
+                                                        {editingItem === item.idDetail ? (
+                                                            <>
+                                                                <button onClick={() => handleSaveHarga(item.idDetail)} className="btn btn-sm" style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem', marginRight: '0.25rem' }}>💾</button>
+                                                                <button onClick={() => setEditingItem(null)} className="btn btn-sm" style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem' }}>❌</button>
+                                                            </>
+                                                        ) : (
+                                                            <button onClick={() => { setEditingItem(item.idDetail); setEditedHarga(item.hargaSatuan) }} className="btn btn-sm" style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem' }}>✏️</button>
+                                                        )}
+                                                    </td>
+                                                </tr>
+                                                
+                                                {/* Show tambahan bahan as sub-rows */}
+                                                {(item.tambahanBahan || []).length > 0 && (
                                                     <>
-                                                        <button onClick={() => handleSaveHarga(item.idDetail)} className="btn btn-sm" style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem', marginRight: '0.25rem' }}>💾</button>
-                                                        <button onClick={() => setEditingItem(null)} className="btn btn-sm" style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem' }}>❌</button>
+                                                        {item.tambahanBahan.map((bahan, bahanIdx) => (
+                                                            <tr key={`${item.idDetail}-bahan-${bahanIdx}`} style={{
+                                                                background: '#f0f9ff',
+                                                                fontSize: '0.9rem'
+                                                            }}>
+                                                                <td></td>
+                                                                <td colSpan="2" style={{paddingLeft: '2rem', color: '#0369a1'}}>
+                                                                    ↳ {bahan.namaBahan}
+                                                                </td>
+                                                                <td></td>
+                                                                <td style={{color: '#0369a1'}}>{bahan.qty}</td>
+                                                                <td style={{color: '#0369a1'}}>{formatCurrency(bahan.harga)}</td>
+                                                                <td style={{color: '#0369a1'}}>{formatCurrency(bahan.subtotal)}</td>
+                                                                <td></td>
+                                                            </tr>
+                                                        ))}
+                                                        <tr style={{background: '#dbeafe', fontWeight: '600'}}>
+                                                            <td colSpan="6" style={{textAlign: 'right', paddingRight: '1rem'}}>
+                                                                Total {item.namaItem}:
+                                                            </td>
+                                                            <td>{formatCurrency(totalItem)}</td>
+                                                            <td></td>
+                                                        </tr>
                                                     </>
-                                                ) : (
-                                                    <button onClick={() => { setEditingItem(item.idDetail); setEditedHarga(item.harga) }} className="btn btn-sm" style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem' }}>✏️</button>
                                                 )}
-                                            </td>
-                                        </tr>
-                                    ))}
+                                            </>
+                                        )
+                                    })}
                                 </tbody>
                                 <tfoot>
                                     <tr>

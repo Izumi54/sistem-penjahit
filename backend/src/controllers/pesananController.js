@@ -122,6 +122,7 @@ export const getPesananById = async (req, res) => {
                                 namaJenis: true,
                             },
                         },
+                        tambahanBahan: true, // Include tambahan bahan
                     },
                 },
                 pembayaran: {
@@ -187,11 +188,19 @@ export const createPesanan = async (req, res) => {
 
         const noNota = generateNoNota(lastPesanan?.noNota)
 
-        // Calculate total biaya
+        // Calculate total biaya (including tambahan bahan)
         let totalBiaya = 0
         detailPesanan.forEach((item) => {
+            // Calculate item subtotal
             item.subtotal = item.hargaSatuan * (item.jumlahPcs || 1)
-            totalBiaya += item.subtotal
+            
+            // Calculate tambahan bahan subtotal
+            const subtotalBahan = (item.tambahanBahan || []).reduce((sum, bahan) => {
+                return sum + ((bahan.qty || 1) * (bahan.harga || 0))
+            }, 0)
+            
+            // Total = item + bahan
+            totalBiaya += item.subtotal + subtotalBahan
         })
 
         const sisaBayar = totalBiaya - totalDp
@@ -214,19 +223,34 @@ export const createPesanan = async (req, res) => {
                 },
             })
 
-            // Create detail pesanan
-            await tx.detailPesanan.createMany({
-                data: detailPesanan.map((item) => ({
-                    noNota,
-                    idJenis: item.idJenis,
-                    namaItem: item.namaItem,
-                    modelSpesifik: item.modelSpesifik || null,
-                    jumlahPcs: item.jumlahPcs || 1,
-                    hargaSatuan: item.hargaSatuan,
-                    subtotal: item.subtotal,
-                    catatanPenjahit: item.catatanPenjahit || null,
-                })),
-            })
+            // Create detail pesanan (loop to get idDetail for tambahan bahan)
+            for (const item of detailPesanan) {
+                const detail = await tx.detailPesanan.create({
+                    data: {
+                        noNota,
+                        idJenis: item.idJenis,
+                        namaItem: item.namaItem,
+                        modelSpesifik: item.modelSpesifik || null,
+                        jumlahPcs: item.jumlahPcs || 1,
+                        hargaSatuan: item.hargaSatuan,
+                        subtotal: item.subtotal,
+                        catatanPenjahit: item.catatanPenjahit || null,
+                    },
+                })
+
+                // Create tambahan bahan if exists
+                if (item.tambahanBahan && item.tambahanBahan.length > 0) {
+                    await tx.tambahanBahan.createMany({
+                        data: item.tambahanBahan.map((bahan) => ({
+                            idDetail: detail.idDetail,
+                            namaBahan: bahan.nama,
+                            qty: bahan.qty || 1,
+                            harga: bahan.harga || 0,
+                            subtotal: (bahan.qty || 1) * (bahan.harga || 0),
+                        })),
+                    })
+                }
+            }
 
             // Create initial history status
             await tx.historyStatusPesanan.create({
