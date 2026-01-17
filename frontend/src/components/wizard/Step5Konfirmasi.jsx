@@ -119,7 +119,22 @@ function Step5Konfirmasi() {
                                     const subtotal = (item.hargaSatuan || 0) * (item.jumlahPcs || 1)
                                     return (
                                         <tr key={index}>
-                                            <td>{item.namaItem}</td>
+                                            <td>
+                                                {item.namaItem}
+                                                {item.isGrouped && (
+                                                    <span style={{
+                                                        marginLeft: '0.5rem',
+                                                        fontSize: '0.75rem',
+                                                        padding: '0.125rem 0.5rem',
+                                                        background: '#fbbf24',
+                                                        color: '#78350f',
+                                                        borderRadius: '4px',
+                                                        fontWeight: '600'
+                                                    }}>
+                                                        🔢 Ukuran Berbeda
+                                                    </span>
+                                                )}
+                                            </td>
                                             <td>{item.jumlahPcs || 1}</td>
                                             <td> Rp {(item.hargaSatuan || 0).toLocaleString('id-ID')}</td>
                                             <td>Rp {subtotal.toLocaleString('id-ID')}</td>

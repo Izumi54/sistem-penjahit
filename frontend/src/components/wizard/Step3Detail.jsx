@@ -75,6 +75,45 @@ function Step3Detail() {
                         </div>
                     </div>
 
+                    {/* NEW: Grouped measurement toggle */}
+                    {item.jumlahPcs > 1 && (
+                        <div className="form-group" style={{
+                            padding: '1rem', 
+                            background: '#fef3c7', 
+                            borderRadius: '8px', 
+                            border: '1px solid #fbbf24',
+                            marginBottom: '1rem'
+                        }}>
+                            <label className="checkbox-label" style={{
+                                display: 'flex', 
+                                alignItems: 'center', 
+                                gap: '0.5rem',
+                                cursor: 'pointer',
+                                margin: 0
+                            }}>
+                                <input
+                                    type="checkbox"
+                                    checked={item.isGrouped || false}
+                                    onChange={(e) => handleChange(item.id, 'isGrouped', e.target.checked)}
+                                    style={{width: '1.25rem', height: '1.25rem', cursor: 'pointer'}}
+                                />
+                                <span style={{fontSize: '0.95rem', fontWeight: '500'}}>
+                                    🔢 Item ini memiliki <strong>ukuran berbeda</strong> untuk setiap PCS
+                                </span>
+                            </label>
+                            <p style={{
+                                fontSize: '0.85rem', 
+                                color: '#92400e', 
+                                marginTop: '0.5rem',
+                                marginBottom: 0,
+                                marginLeft: '1.75rem'
+                            }}>
+                                Jika dicentang, Anda akan diminta mengisi ukuran terpisah untuk setiap PCS di Step 4
+                            </p>
+                        </div>
+                    )}
+
+
                                         {/* Tambahan Bahan - PROPER FORM */}
                     <div className="form-group" style={{marginTop: '1.5rem', padding: '1rem', background: '#f0f9ff', borderRadius: '8px', border: '1px solid #bfdbfe'}}>
                         <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem'}}>

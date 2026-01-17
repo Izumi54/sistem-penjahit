@@ -30,11 +30,19 @@ function InputPesanan() {
                 idPelanggan = pelangganResponse.data.idPelanggan
             }
 
-            // Save ukuran data if exists
+            // Save ukuran data if exists (skip grouped items)
             if (payload.ukuranData && Object.keys(payload.ukuranData).length > 0) {
                 // For each jenis, save ukuran to pelanggan
-                for (const idJenis of Object.keys(payload.ukuranData)) {
+                // Skip keys that start with "item_" (grouped ukuran)
+                for (const key of Object.keys(payload.ukuranData)) {
+                    // Skip grouped items (they have key format: "item_12345")
+                    if (key.startsWith('item_')) {
+                        continue
+                    }
+
+                    const idJenis = key
                     const ukuranFields = payload.ukuranData[idJenis]
+                    
                     if (Object.keys(ukuranFields).length > 0) {
                         // Convert object {LD: "90", LP: "75"} to array [{kodeUkuran: "LD", nilai: 90}, ...]
                         const ukuranArray = Object.entries(ukuranFields).map(([kodeUkuran, nilai]) => ({

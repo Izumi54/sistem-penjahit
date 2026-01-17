@@ -35,7 +35,12 @@ const useWizardStore = create((set, get) => ({
 
     addItem: (item) =>
         set((state) => ({
-            items: [...state.items, { ...item, id: Date.now() }],
+            items: [...state.items, { 
+                ...item, 
+                id: Date.now(),
+                isGrouped: false,
+                groupSize: item.jumlahPcs || 1
+            }],
         })),
 
     updateItem: (itemId, updates) =>
@@ -70,6 +75,40 @@ const useWizardStore = create((set, get) => ({
             },
         })),
 
+    // NEW: Set grouped ukuran (array of measurements for multiple PCS)
+    setGroupedUkuran: (itemId, ukuranArray) =>
+        set((state) => ({
+            ukuranData: {
+                ...state.ukuranData,
+                [`item_${itemId}`]: ukuranArray,
+            },
+        })),
+
+    // NEW: Update specific PCS in a grouped item
+    updateGroupedUkuran: (itemId, pcsIndex, kodeUkuran, nilai) =>
+        set((state) => {
+            const key = `item_${itemId}`
+            const current = state.ukuranData[key] || []
+            const updated = [...current]
+            
+            // Ensure array has enough slots
+            while (updated.length <= pcsIndex) {
+                updated.push({})
+            }
+            
+            updated[pcsIndex] = {
+                ...(updated[pcsIndex] || {}),
+                [kodeUkuran]: nilai,
+            }
+            
+            return {
+                ukuranData: {
+                    ...state.ukuranData,
+                    [key]: updated,
+                },
+            }
+        }),
+
     setTanggal: (tglMasuk, tglJanjiSelesai) =>
         set({ tglMasuk, tglJanjiSelesai }),
 
@@ -77,12 +116,19 @@ const useWizardStore = create((set, get) => ({
 
     setCatatan: (catatanPesanan) => set({ catatanPesanan }),
 
-    // Calculate total biaya from items
+    // Calculate total biaya from items (including tambahan bahan)
     getTotalBiaya: () => {
         const { items } = get()
         return items.reduce((total, item) => {
-            const subtotal = (item.hargaSatuan || 0) * (item.jumlahPcs || 1)
-            return total + subtotal
+            // Calculate item subtotal
+            const subtotalItem = (item.hargaSatuan || 0) * (item.jumlahPcs || 1)
+            
+            // Calculate tambahan bahan subtotal
+            const subtotalBahan = (item.tambahanBahan || []).reduce((sum, bahan) => {
+                return sum + ((bahan.qty || 0) * (bahan.harga || 0))
+            }, 0)
+            
+            return total + subtotalItem + subtotalBahan
         }, 0)
     },
 
