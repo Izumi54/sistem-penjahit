@@ -72,11 +72,13 @@ app.use((err, req, res, next) => {
     })
 })
 
-// Start server
-app.listen(PORT, () => {
-    console.log(`✅ Server running on http://localhost:${PORT}`)
-    console.log(`📦 Environment: ${process.env.NODE_ENV || 'development'}`)
-    console.log(`🔗 Frontend URL: ${process.env.FRONTEND_URL || 'http://localhost:3000'}`)
-})
+// Start server (Only if not running on Vercel)
+if (!process.env.VERCEL) {
+    app.listen(PORT, () => {
+        console.log(`✅ Server running on http://localhost:${PORT}`)
+        console.log(`📦 Environment: ${process.env.NODE_ENV || 'development'}`)
+        console.log(`🔗 Frontend URL: ${process.env.FRONTEND_URL || 'http://localhost:3000'}`)
+    })
+}
 
 export default app
