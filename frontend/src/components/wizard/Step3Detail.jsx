@@ -124,22 +124,21 @@ function Step3Detail() {
                         </div>
                         
                         {(item.tambahanBahan || []).map((bahan, bahanIdx) => (
-                            <div key={bahanIdx} style={{display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 40px', gap: '0.5rem', marginBottom: '0.5rem', padding: '0.75rem', background: 'white', borderRadius: '6px'}}>
+                            <div key={bahanIdx} className="bahan-item-card">
                                 <input
                                     type="text"
-                                    className="input"
-                                    placeholder="Nama bahan (Kancing, Resleting...)"
+                                    className="input bahan-input-nama"
+                                    placeholder="Nama bahan"
                                     value={bahan.nama}
                                     onChange={(e) => {
                                         const updated = [...(item.tambahanBahan || [])]
                                         updated[bahanIdx].nama = e.target.value
                                         handleChange(item.id, 'tambahanBahan', updated)
                                     }}
-                                    style={{fontSize: '0.875rem', padding: '0.5rem'}}
                                 />
                                 <input
                                     type="number"
-                                    className="input"
+                                    className="input bahan-input-qty"
                                     placeholder="Qty"
                                     value={bahan.qty}
                                     onChange={(e) => {
@@ -148,11 +147,10 @@ function Step3Detail() {
                                         handleChange(item.id, 'tambahanBahan', updated)
                                     }}
                                     min="1"
-                                    style={{fontSize: '0.875rem', padding: '0.5rem'}}
                                 />
                                 <input
                                     type="number"
-                                    className="input"
+                                    className="input bahan-input-harga"
                                     placeholder="Harga"
                                     value={bahan.harga}
                                     onChange={(e) => {
@@ -161,15 +159,15 @@ function Step3Detail() {
                                         handleChange(item.id, 'tambahanBahan', updated)
                                     }}
                                     min="0"
-                                    style={{fontSize: '0.875rem', padding: '0.5rem'}}
                                 />
                                 <button
                                     type="button"
+                                    className="btn-delete-bahan"
                                     onClick={() => {
                                         const updated = (item.tambahanBahan || []).filter((_, i) => i !== bahanIdx)
                                         handleChange(item.id, 'tambahanBahan', updated)
                                     }}
-                                    style={{background: '#fee2e2', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '1rem'}}
+                                    title="Hapus"
                                 >
                                     🗑️
                                 </button>

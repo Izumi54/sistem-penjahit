@@ -242,32 +242,77 @@
     border-top: 2px solid var(--color-gray-300);
 }
 
+/* Bahan Item Card (Step 3) */
+.bahan-item-card {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 40px;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+    padding: 0.75rem;
+    background: white;
+    border: 1px solid var(--color-gray-200);
+    border-radius: 6px;
+    align-items: center;
+}
+
+.bahan-item-card .input {
+    font-size: 0.875rem;
+    padding: 0.5rem;
+    margin: 0; /* Prevention */
+}
+
+.btn-delete-bahan {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fee2e2;
+    border: 1px solid #fecaca;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    padding: 0;
+    transition: background 0.2s;
+}
+
+.btn-delete-bahan:hover {
+    background: #fecaca;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .input-pesanan-page {
-        padding-bottom: 80px; /* Space for bottom nav & wizard nav */
+        padding-bottom: 200px; /* Increased space for sticky footer + bottom nav */
+    }
+
+    /* Page Title Mobile */
+    .page-title {
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+        text-align: center;
     }
 
     /* Simplify Wizard Progress Header */
     .wizard-progress {
-        margin-top: 1rem;
+        margin-top: 0.5rem;
         padding: 0 1rem;
-        justify-content: space-between; /* Space out numbers */
+        justify-content: space-between;
     }
 
     .step-label {
-        display: none; /* Hide labels on mobile to save space */
+        display: none;
     }
 
     .step-line {
         min-width: 10px;
-        margin: 0 0.5rem;
+        margin: 0 0.25rem;
     }
 
     .step-number {
-        width: 32px;
-        height: 32px;
-        font-size: 0.875rem;
+        width: 28px;
+        height: 28px;
+        font-size: 0.75rem;
     }
 
     /* Content Adjustment */
@@ -276,47 +321,60 @@
     }
 
     .step-title {
-        font-size: 1.25rem;
+        font-size: 1.125rem;
         margin-bottom: 1rem;
         text-align: center;
+        color: var(--color-primary);
     }
 
     /* Sticky Bottom Navigation for Wizard */
     .wizard-nav {
         position: fixed;
-        bottom: 64px; /* Above BottomNav */
+        bottom: 56px; /* Matches standard Mobile BottomNav height */
         left: 0;
         right: 0;
         background: white;
-        padding: 1rem;
+        padding: 0.75rem 1rem;
         margin-top: 0;
         border-top: 1px solid var(--color-gray-200);
-        box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
-        z-index: 900;
-        flex-direction: row; /* Keep buttons consistent */
-        gap: 1rem;
+        box-shadow: 0 -4px 12px rgba(0,0,0,0.08);
+        z-index: 800; /* Below Mobile Menu (usually 1000) */
+        flex-direction: row;
+        gap: 0.75rem;
+        align-items: center;
+    }
+    
+    /* Support environments with larger bottom nav or safe area */
+    @supports (padding-bottom: env(safe-area-inset-bottom)) {
+        .wizard-nav {
+            bottom: calc(56px + env(safe-area-inset-bottom)); 
+        }
     }
 
     .wizard-nav button {
-        flex: 1; /* Full width buttons sharing space */
-        height: 48px; /* Bigger touch target */
-        font-size: 1rem;
+        flex: 1;
+        height: 44px;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     /* Mode Toggle Stack */
     .mode-toggle {
-        flex-direction: row; /* Keep side-by-side but squeeze or wrap */
+        flex-direction: row;
         flex-wrap: wrap;
-        gap: 1rem;
+        gap: 0.75rem;
         background: white;
-        padding: 0.5rem;
+        padding: 0.75rem;
         border-radius: 8px;
         border: 1px solid var(--color-gray-200);
         margin-bottom: 1rem;
+        justify-content: center;
     }
 
     .radio-label {
-        font-size: 0.9rem;
+        font-size: 0.85rem;
     }
 
     /* Better Summary Table (Card View transformation) */
@@ -329,7 +387,7 @@
     }
     
     .summary-table thead {
-        display: none !important; /* Hide headers */
+        display: none !important;
     }
 
     .summary-table tr {
@@ -343,7 +401,7 @@
     
     /* Remove padding from Bahan rows */
     .summary-table tr.bahan-row {
-        margin-top: -1rem; /* Connect with parent */
+        margin-top: -1rem;
         margin-bottom: 0;
         border-top: none;
         border-radius: 0;
@@ -352,7 +410,7 @@
     }
     
     .summary-table tr.item-total-row {
-        margin-top: -1rem; /* Connect with parent */
+        margin-top: -1rem;
         border-radius: 0 0 8px 8px;
         background: #eff6ff !important;
         border-top: 2px solid #dbeafe;
@@ -360,7 +418,7 @@
 
     .summary-table td {
         padding: 0.75rem 1rem !important;
-        padding-left: 45% !important; /* Space for label */
+        padding-left: 45% !important;
         position: relative;
         text-align: right !important;
         border-bottom: 1px solid var(--color-gray-100);
@@ -407,7 +465,32 @@
     
     /* Ukuran Grid Optimization */
     .ukuran-grid {
-        grid-template-columns: repeat(2, 1fr); /* Force 2 columns */
+        grid-template-columns: repeat(2, 1fr);
         gap: 0.75rem;
+    }
+
+    /* Mobile Layout for Bahan Item (Step 3) */
+    .bahan-item-card {
+        grid-template-columns: 1fr 1fr !important;
+        grid-template-areas:
+            "name name"
+            "qty harga"
+            "delete delete";
+        gap: 0.75rem;
+        padding: 1rem;
+        border: 1px solid var(--color-gray-300);
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+
+    .bahan-input-nama { grid-area: name; }
+    .bahan-input-qty { grid-area: qty; }
+    .bahan-input-harga { grid-area: harga; }
+    
+    .btn-delete-bahan { 
+        grid-area: delete; 
+        height: 36px;
+        background: #fef2f2;
+        border: 1px dashed #ef4444; 
+        color: #ef4444;
     }
 }
