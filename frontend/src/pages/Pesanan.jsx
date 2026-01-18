@@ -227,24 +227,24 @@ function Pesanan() {
                                                 className="clickable-row-wireframe"
                                                 onClick={() => navigate(`/pesanan/${p.noNota}`)}
                                             >
-                                                <td>
+                                                <td data-label="No Nota" className="mobile-header-content">
                                                     <span className="nota-badge">{p.noNota}</span>
                                                 </td>
-                                                <td className="nama-cell">{p.pelanggan.namaLengkap}</td>
-                                                <td className="date-cell">{formatDate(p.tglMasuk)}</td>
-                                                <td className="date-cell">{formatDate(p.tglJanjiSelesai)}</td>
-                                                <td>
+                                                <td data-label="Pelanggan" className="nama-cell">{p.pelanggan.namaLengkap}</td>
+                                                <td data-label="Tgl Masuk" className="date-cell">{formatDate(p.tglMasuk)}</td>
+                                                <td data-label="Tgl Selesai" className="date-cell">{formatDate(p.tglJanjiSelesai)}</td>
+                                                <td data-label="Status">
                                                     <span className={`status-badge ${getStatusBadgeClass(p.statusPesanan)}`}>
                                                         {p.statusPesanan}
                                                     </span>
                                                 </td>
-                                                <td className="currency-cell">{formatCurrency(p.totalBiaya)}</td>
-                                                <td>
+                                                <td data-label="Total" className="currency-cell">{formatCurrency(p.totalBiaya)}</td>
+                                                <td data-label="Sisa Bayar">
                                                     <span className={p.sisaBayar > 0 ? 'sisa-bayar-pending' : 'sisa-bayar-lunas'}>
                                                         {formatCurrency(p.sisaBayar)}
                                                     </span>
                                                 </td>
-                                                <td>
+                                                <td data-label="Aksi">
                                                     <div className="action-buttons-wireframe">
                                                         <button
                                                             onClick={(e) => {

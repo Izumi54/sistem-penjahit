@@ -11,6 +11,20 @@ import Pesanan from './pages/Pesanan'
 import InputPesanan from './pages/InputPesanan'
 import DetailPesanan from './pages/DetailPesanan'
 import './App.css'
+import BottomNav from './components/BottomNav'
+
+// Layout wrapper for protected pages
+const AppLayout = ({ children }) => (
+    <ProtectedRoute>
+        <>
+            <Header />
+            <main className="app-main">
+                {children}
+            </main>
+            <BottomNav />
+        </>
+    </ProtectedRoute>
+)
 
 function App() {
     const { isAuthenticated, initAuth } = useAuthStore()
@@ -35,67 +49,49 @@ function App() {
                 <Route
                     path="/dashboard"
                     element={
-                        <ProtectedRoute>
-                            <>
-                                <Header />
-                                <Dashboard />
-                            </>
-                        </ProtectedRoute>
+                        <AppLayout>
+                            <Dashboard />
+                        </AppLayout>
                     }
                 />
                 <Route
                     path="/pelanggan"
                     element={
-                        <ProtectedRoute>
-                            <>
-                                <Header />
-                                <Pelanggan />
-                            </>
-                        </ProtectedRoute>
+                        <AppLayout>
+                            <Pelanggan />
+                        </AppLayout>
                     }
                 />
                 <Route
                     path="/jenis-pakaian"
                     element={
-                        <ProtectedRoute>
-                            <>
-                                <Header />
-                                <JenisPakaian />
-                            </>
-                        </ProtectedRoute>
+                        <AppLayout>
+                            <JenisPakaian />
+                        </AppLayout>
                     }
                 />
                 <Route
                     path="/pesanan"
                     element={
-                        <ProtectedRoute>
-                            <>
-                                <Header />
-                                <Pesanan />
-                            </>
-                        </ProtectedRoute>
+                        <AppLayout>
+                            <Pesanan />
+                        </AppLayout>
                     }
                 />
                 <Route
                     path="/pesanan/baru"
                     element={
-                        <ProtectedRoute>
-                            <>
-                                <Header />
-                                <InputPesanan />
-                            </>
-                        </ProtectedRoute>
+                        <AppLayout>
+                            <InputPesanan />
+                        </AppLayout>
                     }
                 />
                 <Route
                     path="/pesanan/:noNota"
                     element={
-                        <ProtectedRoute>
-                            <>
-                                <Header />
-                                <DetailPesanan />
-                            </>
-                        </ProtectedRoute>
+                        <AppLayout>
+                            <DetailPesanan />
+                        </AppLayout>
                     }
                 />
 

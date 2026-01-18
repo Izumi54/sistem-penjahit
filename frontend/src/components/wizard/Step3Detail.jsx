@@ -18,15 +18,7 @@ function Step3Detail() {
         updateItem(itemId, { [field]: value })
     }
 
-    const handleNext = () => {
-        // Validate all items have required fields
-        const hasEmpty = items.some((item) => !item.namaItem || !item.hargaSatuan)
-        if (hasEmpty) {
-            alert('Semua item harus diisi nama dan harga')
-            return
-        }
-        nextStep()
-    }
+
 
     return (
         <div>
@@ -240,11 +232,7 @@ function Step3Detail() {
                     )}
                 </div>
             ))}
-            <div className="mt-lg">
-                <button onClick={handleNext} className="btn btn-primary btn-block">
-                    Lanjut ke Step 4 (Konfirmasi) →
-                </button>
-            </div>
+
         </div>
     )
 }

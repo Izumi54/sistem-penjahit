@@ -239,11 +239,11 @@ function Pelanggan() {
                                     <tbody>
                                         {pelanggan.map((item) => (
                                             <tr key={item.idPelanggan}>
-                                                <td>
+                                                <td data-label="Kode">
                                                     <span className="kode-badge">{item.idPelanggan}</span>
                                                 </td>
-                                                <td className="nama-cell">{item.namaLengkap}</td>
-                                                <td>
+                                                <td data-label="Nama Lengkap" className="nama-cell mobile-header-content">{item.namaLengkap}</td>
+                                                <td data-label="Jenis Kelamin">
                                                     <span
                                                         className={`gender-badge ${item.jenisKelamin === 'L'
                                                             ? 'gender-badge-male'
@@ -253,19 +253,20 @@ function Pelanggan() {
                                                         {item.jenisKelamin}
                                                     </span>
                                                 </td>
-                                                <td>{item.noWa}</td>
-                                                <td>
+                                                <td data-label="WhatsApp">{item.noWa}</td>
+                                                <td data-label="Total Pesanan">
                                                     <span className="pesanan-count">
                                                         {item._count?.pesanan || 0}x
                                                     </span>
                                                 </td>
-                                                <td className="date-cell">{formatDate(item.createdAt)}</td>
-                                                <td>
+                                                <td data-label="Terdaftar" className="date-cell">{formatDate(item.createdAt)}</td>
+                                                <td data-label="Aksi">
                                                     <div className="action-buttons-wireframe">
                                                         <button
                                                             onClick={() => handleViewUkuran(item)}
                                                             className="action-btn action-btn-view"
                                                             title="Lihat Ukuran"
+                                                            style={{background: '#e0f2fe', color: '#0284c7'}} // Explicit style for view button
                                                         >
                                                             📏
                                                         </button>

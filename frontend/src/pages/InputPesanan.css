@@ -244,24 +244,170 @@
 
 /* Responsive */
 @media (max-width: 768px) {
+    .input-pesanan-page {
+        padding-bottom: 80px; /* Space for bottom nav & wizard nav */
+    }
+
+    /* Simplify Wizard Progress Header */
     .wizard-progress {
-        overflow-x: auto;
-        justify-content: flex-start;
+        margin-top: 1rem;
+        padding: 0 1rem;
+        justify-content: space-between; /* Space out numbers */
     }
 
     .step-label {
-        display: none;
+        display: none; /* Hide labels on mobile to save space */
     }
 
     .step-line {
-        min-width: 20px;
+        min-width: 10px;
+        margin: 0 0.5rem;
     }
 
-    .mode-toggle {
-        flex-direction: column;
-    }
-
-    .summary-table {
+    .step-number {
+        width: 32px;
+        height: 32px;
         font-size: 0.875rem;
+    }
+
+    /* Content Adjustment */
+    .wizard-content {
+        padding: 0 1rem 1rem 1rem;
+    }
+
+    .step-title {
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+        text-align: center;
+    }
+
+    /* Sticky Bottom Navigation for Wizard */
+    .wizard-nav {
+        position: fixed;
+        bottom: 64px; /* Above BottomNav */
+        left: 0;
+        right: 0;
+        background: white;
+        padding: 1rem;
+        margin-top: 0;
+        border-top: 1px solid var(--color-gray-200);
+        box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+        z-index: 900;
+        flex-direction: row; /* Keep buttons consistent */
+        gap: 1rem;
+    }
+
+    .wizard-nav button {
+        flex: 1; /* Full width buttons sharing space */
+        height: 48px; /* Bigger touch target */
+        font-size: 1rem;
+    }
+
+    /* Mode Toggle Stack */
+    .mode-toggle {
+        flex-direction: row; /* Keep side-by-side but squeeze or wrap */
+        flex-wrap: wrap;
+        gap: 1rem;
+        background: white;
+        padding: 0.5rem;
+        border-radius: 8px;
+        border: 1px solid var(--color-gray-200);
+        margin-bottom: 1rem;
+    }
+
+    .radio-label {
+        font-size: 0.9rem;
+    }
+
+    /* Better Summary Table (Card View transformation) */
+    .summary-table, 
+    .summary-table tbody, 
+    .summary-table tr, 
+    .summary-table td {
+        display: block !important;
+        width: 100% !important;
+    }
+    
+    .summary-table thead {
+        display: none !important; /* Hide headers */
+    }
+
+    .summary-table tr {
+        margin-bottom: 1rem;
+        background: white;
+        border: 1px solid var(--color-gray-200);
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        position: relative;
+    }
+    
+    /* Remove padding from Bahan rows */
+    .summary-table tr.bahan-row {
+        margin-top: -1rem; /* Connect with parent */
+        margin-bottom: 0;
+        border-top: none;
+        border-radius: 0;
+        background: #f8fafc !important; 
+        border-bottom: 1px dashed var(--color-gray-200);
+    }
+    
+    .summary-table tr.item-total-row {
+        margin-top: -1rem; /* Connect with parent */
+        border-radius: 0 0 8px 8px;
+        background: #eff6ff !important;
+        border-top: 2px solid #dbeafe;
+    }
+
+    .summary-table td {
+        padding: 0.75rem 1rem !important;
+        padding-left: 45% !important; /* Space for label */
+        position: relative;
+        text-align: right !important;
+        border-bottom: 1px solid var(--color-gray-100);
+        display: flex !important;
+        justify-content: flex-end;
+        align-items: center;
+        min-height: 40px;
+    }
+    
+    .summary-table td:last-child {
+        border-bottom: none;
+    }
+
+    /* Pseudo-element for labels */
+    .summary-table td:before {
+        content: attr(data-label);
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 40%;
+        text-align: left;
+        font-weight: 600;
+        font-size: 0.825rem;
+        color: var(--color-gray-500);
+    }
+    
+    /* Item Name Header Cell */
+    .summary-table td.mobile-header-cell {
+        padding-left: 1rem !important;
+        text-align: left !important;
+        justify-content: flex-start;
+        background: var(--color-gray-50);
+        border-bottom: 1px solid var(--color-gray-200);
+    }
+    
+    .summary-table td.mobile-header-cell:before {
+        display: none; 
+    }
+    
+    .desktop-only-cell {
+        display: none !important;
+    }
+    
+    /* Ukuran Grid Optimization */
+    .ukuran-grid {
+        grid-template-columns: repeat(2, 1fr); /* Force 2 columns */
+        gap: 0.75rem;
     }
 }

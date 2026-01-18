@@ -674,6 +674,93 @@
         padding: 0.5rem 0.75rem;
     }
 
+    /* Card View Transformation for Mobile */
+    .table-detail, 
+    .table-detail tbody, 
+    .table-detail tr, 
+    .table-detail td {
+        display: block !important;
+        width: 100% !important;
+        box-sizing: border-box; /* Fix width calculation */
+    }
+    
+    .table-detail thead {
+        display: none !important; /* Hide headers */
+    }
+
+    .table-detail tr {
+        margin-bottom: 1rem;
+        background: white;
+        border: 1px solid var(--color-gray-200);
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        position: relative;
+    }
+    
+    /* Remove padding from Bahan rows */
+    .table-detail tr.bahan-row {
+        margin-top: -1rem; /* Connect with parent */
+        margin-bottom: 0;
+        border-top: none;
+        border-radius: 0;
+        background: #f8fafc !important; 
+        border-bottom: 1px dashed var(--color-gray-200);
+    }
+    
+    .table-detail tr.item-total-row {
+        margin-top: -1rem; /* Connect with parent */
+        border-radius: 0 0 8px 8px;
+        background: #eff6ff !important;
+        border-top: 2px solid #dbeafe;
+    }
+
+    .table-detail td {
+        padding: 0.75rem 1rem !important;
+        padding-left: 45% !important; /* Space for label */
+        position: relative;
+        text-align: right !important;
+        border-bottom: 1px solid var(--color-gray-100);
+        display: flex !important;
+        justify-content: flex-end;
+        align-items: center;
+        min-height: 40px;
+    }
+    
+    .table-detail td:last-child {
+        border-bottom: none;
+    }
+
+    /* Pseudo-element for labels using data-label attribute */
+    .table-detail td:before {
+        content: attr(data-label);
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 40%;
+        text-align: left;
+        font-weight: 600;
+        font-size: 0.825rem;
+        color: var(--color-gray-500);
+    }
+    
+    /* Item Name Header Cell */
+    .table-detail td.mobile-header-cell {
+        padding-left: 1rem !important;
+        text-align: left !important;
+        justify-content: flex-start;
+        background: var(--color-gray-50);
+        border-bottom: 1px solid var(--color-gray-200);
+    }
+    
+    .table-detail td.mobile-header-cell:before {
+        display: none; 
+    }
+    
+    .desktop-only-cell {
+        display: none !important;
+    }
+
     .modal-content {
         margin: 0 1rem;
     }

@@ -12,9 +12,32 @@ import './InputPesanan.css'
 
 function InputPesanan() {
     const navigate = useNavigate()
-    const { currentStep, prevStep, reset, getPayload } = useWizardStore()
+    const { currentStep, prevStep, nextStep, reset, getPayload, items } = useWizardStore()
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState(null)
+
+    const handleNextGlobal = () => {
+        // Step 2 Validation: Check if items exist
+        if (currentStep === 2) {
+            if (items.length === 0) {
+                alert('Tambahkan minimal 1 item')
+                return
+            }
+        }
+
+        // Step 3 Validation: Check item details
+        if (currentStep === 3) {
+            const hasEmpty = items.some((item) => !item.namaItem || !item.hargaSatuan)
+            if (hasEmpty) {
+                alert('Semua item harus diisi nama dan harga')
+                return
+            }
+        }
+
+        // Step 4: No strict validation (optional measurement)
+
+        nextStep()
+    }
 
     const handleSubmit = async () => {
         setLoading(true)
@@ -74,10 +97,9 @@ function InputPesanan() {
             reset()
             navigate(`/dashboard`)
         } catch (err) {
-        // Handle duplicate pelanggan error
+            // Handle duplicate pelanggan error
             if (err.response?.status === 409) {
-                setCurrentStep(1)
-                setError(`Duplikat Pelanggan: ${err.response.data.error}. Silakan gunakan pelanggan yang sudah ada atau ubah nama/no WA.`)
+                setError(`Duplikat Pelanggan: ${err.response.data.error}.`)
             } else {
                 setError(err.response?.data?.error || 'Gagal membuat pesanan')
             }
@@ -95,35 +117,25 @@ function InputPesanan() {
 
     return (
         <div className="input-pesanan-page">
-            {/* Header */}
             <div className="wizard-header">
                 <div className="container">
                     <h1 className="page-title">➕ Input Pesanan Baru</h1>
                     <div className="wizard-progress">
-                        <div className={`step ${currentStep >= 1 ? 'active' : ''}`}>
-                            <div className="step-number">1</div>
-                            <div className="step-label">Pelanggan</div>
-                        </div>
-                        <div className="step-line"></div>
-                        <div className={`step ${currentStep >= 2 ? 'active' : ''}`}>
-                            <div className="step-number">2</div>
-                            <div className="step-label">Jenis Pakaian</div>
-                        </div>
-                        <div className="step-line"></div>
-                        <div className={`step ${currentStep >= 3 ? 'active' : ''}`}>
-                            <div className="step-number">3</div>
-                            <div className="step-label">Detail</div>
-                        </div>
-                        <div className="step-line"></div>
-                        <div className={`step ${currentStep >= 4 ? 'active' : ''}`}>
-                            <div className="step-number">4</div>
-                            <div className="step-label">Ukuran</div>
-                        </div>
-                        <div className="step-line"></div>
-                        <div className={`step ${currentStep >= 5 ? 'active' : ''}`}>
-                            <div className="step-number">5</div>
-                            <div className="step-label">Konfirmasi</div>
-                        </div>
+                        {[1, 2, 3, 4, 5].map(step => (
+                            <div key={step} style={{display: 'contents'}}>
+                             <div className={`step ${currentStep >= step ? 'active' : ''}`}>
+                                <div className="step-number">{step}</div>
+                                <div className="step-label">
+                                    {step === 1 && 'Pelanggan'}
+                                    {step === 2 && 'Jenis'}
+                                    {step === 3 && 'Detail'}
+                                    {step === 4 && 'Ukuran'}
+                                    {step === 5 && 'Konfirmasi'}
+                                </div>
+                             </div>
+                             {step < 5 && <div className="step-line"></div>}
+                            </div>
+                        ))}
                     </div>
                 </div>
             </div>
@@ -165,6 +177,19 @@ function InputPesanan() {
                             >
                                 Batal
                             </button>
+                            
+                            {/* Global Next Button for Steps 2-4 */}
+                            {currentStep >= 2 && currentStep < 5 && (
+                                <button
+                                    onClick={handleNextGlobal}
+                                    className="btn btn-primary"
+                                    disabled={loading}
+                                >
+                                    Lanjut →
+                                </button>
+                            )}
+
+                            {/* Save Button for Step 5 */}
                             {currentStep === 5 && (
                                 <button
                                     onClick={handleSubmit}

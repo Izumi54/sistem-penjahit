@@ -123,10 +123,29 @@
 
     .header-nav {
         display: none;
-        /* Mobile menu to be added later */
     }
 
     .brand-text {
         font-size: var(--text-base);
+    }
+    
+    /* Mobile Logout Button - Icon Only */
+    .logout-btn {
+        font-size: 0; /* Hide text */
+        padding: 0;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(255,255,255,0.1);
+        border: 1px solid rgba(255,255,255,0.2);
+    }
+    
+    .logout-btn:after {
+        content: '🚪';
+        font-size: 1.25rem;
+        /* Fix visibility since parent is font-size 0 */
+        display: block; 
     }
 }

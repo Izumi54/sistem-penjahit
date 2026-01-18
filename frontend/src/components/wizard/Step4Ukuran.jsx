@@ -113,27 +113,7 @@ function Step4Ukuran() {
         })
     }
 
-    const handleNext = () => {
-        // Validation: check all jenis have ukuran data (optional for MVP)
-        const hasEmpty = uniqueJenis.some((item) => {
-            const template = templates[item.idJenis]
-            if (!template || template.length === 0) return false // No template, skip
 
-            const ukuran = ukuranData[item.idJenis]
-            if (!ukuran) return true // No data entered
-
-            // Check if all template fields have values
-            return template.some((field) => !ukuran[field.kodeUkuran])
-        })
-
-        if (hasEmpty) {
-            if (!confirm('Beberapa ukuran belum diisi. Lanjutkan tanpa ukuran?')) {
-                return
-            }
-        }
-
-        nextStep()
-    }
 
     if (loading) {
         return (
@@ -311,11 +291,7 @@ function Step4Ukuran() {
                 💡 <strong>Tips:</strong> Ukuran badan akan disimpan untuk pelanggan ini. Bisa dilewati jika belum sempat ukur.
             </div>
 
-            <div className="mt-lg">
-                <button onClick={handleNext} className="btn btn-primary btn-block">
-                    Lanjut ke Step 5 (Konfirmasi) →
-                </button>
-            </div>
+
         </div>
     )
 }

@@ -92,8 +92,8 @@ function JenisPakaian() {
                             </p>
                         </div>
                     ) : (
-                        <div className="table-responsive">
-                            <table className="table">
+                        <div className="table-wrapper-wireframe">
+                            <table className="table-wireframe">
                                 <thead>
                                     <tr>
                                         <th>ID</th>
@@ -107,14 +107,14 @@ function JenisPakaian() {
                                 <tbody>
                                     {jenisPakaian.map((item) => (
                                         <tr key={item.idJenis}>
-                                            <td>
+                                            <td data-label="ID">
                                                 <span className="badge badge-info">{item.idJenis}</span>
                                             </td>
-                                            <td className="font-semibold">{item.namaJenis}</td>
-                                            <td>{item.keterangan || '-'}</td>
-                                            <td>{item._count?.templateUkuran || 0} ukuran</td>
-                                            <td>{item._count?.ukuranPelanggan || 0} data</td>
-                                            <td>
+                                            <td data-label="Nama Jenis" className="font-semibold mobile-header-content">{item.namaJenis}</td>
+                                            <td data-label="Keterangan">{item.keterangan || '-'}</td>
+                                            <td data-label="Template Ukuran">{item._count?.templateUkuran || 0} ukuran</td>
+                                            <td data-label="Digunakan">{item._count?.ukuranPelanggan || 0} data</td>
+                                            <td data-label="Aksi">
                                                 <div className="flex gap-sm">
                                                     <button
                                                         onClick={() => handleEdit(item)}

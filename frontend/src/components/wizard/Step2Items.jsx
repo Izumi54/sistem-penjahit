@@ -46,13 +46,7 @@ function Step2Items() {
         setSelectedJenis('') // Reset selection
     }
 
-    const handleNext = () => {
-        if (items.length === 0) {
-            alert('Tambahkan minimal 1 item')
-            return
-        }
-        nextStep()
-    }
+
 
     return (
         <div>
@@ -110,11 +104,7 @@ function Step2Items() {
                 </div>
             )}
 
-            <div className="mt-lg">
-                <button onClick={handleNext} className="btn btn-primary btn-block">
-                    Lanjut ke Step 3 (Detail Item) →
-                </button>
-            </div>
+
         </div>
     )
 }

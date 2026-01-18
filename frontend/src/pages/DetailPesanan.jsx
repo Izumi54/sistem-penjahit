@@ -354,12 +354,14 @@ function DetailPesanan() {
                                         return (
                                             <>
                                                 <tr key={item.idDetail}>
-                                                    <td>{index + 1}</td>
-                                                    <td>{item.jenisPakaian.namaJenis}</td>
-                                                    <td>{item.namaItem}</td>
-                                                    <td>{item.modelSpesifik || '-'}</td>
-                                                    <td>{item.jumlahPcs}</td>
-                                                    <td>
+                                                    <td data-label="#" className="desktop-only-cell">{index + 1}</td>
+                                                    <td data-label="Jenis">{item.jenisPakaian.namaJenis}</td>
+                                                    <td data-label="Item" className="mobile-header-cell">
+                                                        <strong>{item.namaItem}</strong>
+                                                    </td>
+                                                    <td data-label="Model">{item.modelSpesifik || '-'}</td>
+                                                    <td data-label="Qty">{item.jumlahPcs}</td>
+                                                    <td data-label="Harga">
                                                         {editingItem === item.idDetail ? (
                                                             <input
                                                                 type="number"
@@ -372,8 +374,8 @@ function DetailPesanan() {
                                                             formatCurrency(item.hargaSatuan)
                                                         )}
                                                     </td>
-                                                    <td className="subtotal-cell">{formatCurrency(item.subtotal)}</td>
-                                                    <td>
+                                                    <td data-label="Subtotal" className="subtotal-cell">{formatCurrency(item.subtotal)}</td>
+                                                    <td data-label="Aksi">
                                                         {editingItem === item.idDetail ? (
                                                             <>
                                                                 <button onClick={() => handleSaveHarga(item.idDetail)} className="btn btn-sm" style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem', marginRight: '0.25rem' }}>💾</button>
@@ -389,27 +391,24 @@ function DetailPesanan() {
                                                 {(item.tambahanBahan || []).length > 0 && (
                                                     <>
                                                         {item.tambahanBahan.map((bahan, bahanIdx) => (
-                                                            <tr key={`${item.idDetail}-bahan-${bahanIdx}`} style={{
-                                                                background: '#f0f9ff',
-                                                                fontSize: '0.9rem'
-                                                            }}>
-                                                                <td></td>
-                                                                <td colSpan="2" style={{paddingLeft: '2rem', color: '#0369a1'}}>
+                                                            <tr key={`${item.idDetail}-bahan-${bahanIdx}`} className="bahan-row">
+                                                                <td className="desktop-only-cell"></td>
+                                                                <td colSpan="2" data-label="Detail Bahan" style={{paddingLeft: '2rem', color: '#0369a1'}}>
                                                                     ↳ {bahan.namaBahan}
                                                                 </td>
-                                                                <td></td>
-                                                                <td style={{color: '#0369a1'}}>{bahan.qty}</td>
-                                                                <td style={{color: '#0369a1'}}>{formatCurrency(bahan.harga)}</td>
-                                                                <td style={{color: '#0369a1'}}>{formatCurrency(bahan.subtotal)}</td>
-                                                                <td></td>
+                                                                <td className="desktop-only-cell"></td>
+                                                                <td data-label="Qty" style={{color: '#0369a1'}}>{bahan.qty}</td>
+                                                                <td data-label="Harga" style={{color: '#0369a1'}}>{formatCurrency(bahan.harga)}</td>
+                                                                <td data-label="Subtotal" style={{color: '#0369a1'}}>{formatCurrency(bahan.subtotal)}</td>
+                                                                <td className="desktop-only-cell"></td>
                                                             </tr>
                                                         ))}
-                                                        <tr style={{background: '#dbeafe', fontWeight: '600'}}>
-                                                            <td colSpan="6" style={{textAlign: 'right', paddingRight: '1rem'}}>
+                                                        <tr className="item-total-row" style={{background: '#dbeafe', fontWeight: '600'}}>
+                                                            <td colSpan="6" className="desktop-only-cell" style={{textAlign: 'right', paddingRight: '1rem'}}>
                                                                 Total {item.namaItem}:
                                                             </td>
-                                                            <td>{formatCurrency(totalItem)}</td>
-                                                            <td></td>
+                                                            <td data-label={`Total ${item.namaItem}`}>{formatCurrency(totalItem)}</td>
+                                                            <td className="desktop-only-cell"></td>
                                                         </tr>
                                                     </>
                                                 )}
